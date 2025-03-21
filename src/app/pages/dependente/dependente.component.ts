@@ -53,14 +53,13 @@ export class DependenteComponent implements OnInit {
   warnMsg = {status:false, msg: 'Já cadastrado(a)'};
   submitType:'set'| 'edit' = 'set'
   depId!:number
+  
   ngOnInit(): void {
     this.getDependents()
     .pipe(
       takeUntil(this.destroy$),
       tap((dep)=> this.verifySpouse(dep)),
-      switchMap((dep)=>{
-        return this.setDependentFromParam(dep)
-      })
+      switchMap(dep=> this.setDependentFromParam(dep))
     )
     .subscribe();
   }

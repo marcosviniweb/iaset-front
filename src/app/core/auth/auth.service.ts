@@ -44,6 +44,11 @@ export class AuthService {
     newPassword: string;
   }){
     return firstValueFrom(this.httpClient.put(this.apiUrl.dataUser+`/${this.userData.id}/password`, body))
-     
+  }
+
+  async changeFirstAccess(
+    body:{firstAccess: boolean;}
+  ){
+    return firstValueFrom(this.httpClient.put(this.apiUrl.dataUser+`/${this.userData.id}`, body))
   }
 }

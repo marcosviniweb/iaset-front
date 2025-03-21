@@ -1,11 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { BehaviorSubject, Observable, filter, firstValueFrom, map } from 'rxjs';
+import { BehaviorSubject, Observable, filter, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RouteService {
+  
   private router = inject(Router);
   private currentPath$ = new BehaviorSubject<string>('');
 

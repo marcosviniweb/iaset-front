@@ -1,8 +1,6 @@
-import { LayoutModule } from '@angular/cdk/layout';
-import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
-import { filter, map, startWith, tap } from 'rxjs';
-import { RouteService } from './core/services/routeObserver.service';
+import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
+
 
 @Component({
   imports: [RouterModule],
@@ -21,7 +19,7 @@ import { RouteService } from './core/services/routeObserver.service';
   ],
 })
 export class AppComponent {
-  private routeService  = inject(RouteService)
+
   title = 'IASET';
 
  

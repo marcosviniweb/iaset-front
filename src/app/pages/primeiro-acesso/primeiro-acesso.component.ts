@@ -9,57 +9,55 @@ import { UserData } from '../../core/models/userData.model';
 
 @Component({
   selector: 'app-primeiro-acesso',
-  imports: [RouterModule,CommonModule, ReactiveFormsModule],
+  imports: [RouterModule, CommonModule, ReactiveFormsModule],
   templateUrl: './primeiro-acesso.component.html',
   styleUrl: './primeiro-acesso.component.scss'
 })
-export class PrimeiroAcessoComponent implements OnInit{
+export class PrimeiroAcessoComponent implements OnInit {
   private authService = inject(AuthService);
-  private dataService = inject(CoreService)
   private fb = inject(NonNullableFormBuilder)
-  
-  userData:UserData = JSON.parse(localStorage.getItem('userData') as string)
+
+  userData: UserData = JSON.parse(localStorage.getItem('userData') as string)
   private route = inject(Router)
   passwordForm = this.fb.group({
-    oldPassword:['leite788'],
-    newPassword:['', [Validators.required]],
-    confirmPassword:['',[Validators.required]]
+    oldPassword: ['123456'],
+    newPassword: ['', [Validators.required]],
+    confirmPassword: ['', [Validators.required]]
   })
   ngOnInit(): void {
-      this.passwordForm.setValidators(this.passwordMatchValidator)
+    this.passwordForm.setValidators(this.passwordMatchValidator)
   }
-  
-  logOff(){
+
+  logOff() {
     this.authService.logOff()
   }
 
-  async submit(){
+  async submit() {
     const data = {
-      oldPassword:this.passwordForm.value.oldPassword!,
-      newPassword:this.passwordForm.value.newPassword!
-     }
-    this.authService.passwordChange(data)
-    .then(async ()=> {
-      const data = this.userData as {[key:string]:any}
-      const formData = new FormData()
-      Object.keys(this.userData).forEach(key => {
-        if(key == 'firstAccess'){
-          formData.append(key, 'false') 
-        }
-        else{
-          formData.append(key, data[key]) 
-        }
-          
-      });
-      formData.forEach((value,key)=>{
-        console.log(key,value)
+      oldPassword: this.passwordForm.value.oldPassword!,
+      newPassword: this.passwordForm.value.newPassword!
+    }
+    console.log(data)
+
+    await this.authService.passwordChange(data)
+      .then(async() => {
+        await this.changeFirstAcess()
+          .then(() => {
+            this.route.navigate(['/'])
+          })
+          .catch(error => {
+            throw error
+          })
       })
-      await firstValueFrom(this.dataService.updateUserData(this.userData.id, formData))
-      .then((response)=>{
-        console.log(response)
+      .catch((error) => {
+        throw error
       })
-      this.route.navigate(['/'])
-    })
+
+
+  }
+
+  changeFirstAcess() {
+    return this.authService.changeFirstAccess({ firstAccess: false })
   }
 
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
@@ -68,5 +66,5 @@ export class PrimeiroAcessoComponent implements OnInit{
     return password === confirmPassword ? null : { mismatch: true };
   }
 
-  
+
 }
