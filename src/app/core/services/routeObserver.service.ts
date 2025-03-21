@@ -31,7 +31,7 @@ private userData$ = new BehaviorSubject<boolean>(false);
 private checkUserData(): void {
   const userData = JSON.parse(localStorage.getItem('userData') as string);
   const isProfileComplete = userData && userData.name && userData.matricula && userData.cpf && userData.birthDay;
-  this.userData$.next(false);
+  this.userData$.next(!!isProfileComplete);
 }
 
 getUserDataStatus(){

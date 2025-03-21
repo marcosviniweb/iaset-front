@@ -4,7 +4,6 @@ import { PainelComponent } from './pages/painel/painel.component';
 import { HomeComponent } from './pages/home/home.component';
 import { authGuard } from './core/guards/auth.guard';
 import { PrimeiroAcessoComponent } from './pages/primeiro-acesso/primeiro-acesso.component';
-import { firstAcessGuard } from './core/guards/first-acess.guard';
 
 
 export const routes: Routes = [
@@ -17,6 +16,7 @@ export const routes: Routes = [
         {path:'esporte', loadComponent:()=> import('./pages/esporte/esporte.component').then((c)=> c.EsporteComponent)},
         {path:'convenios', loadComponent:()=> import('./pages/convenios/convenios.component').then((c)=> c.ConveniosComponent)},
         {path:'dependente', loadComponent:()=> import('./pages/dependente/dependente.component').then((c)=> c.DependenteComponent)},
+        {path:'dependente/:id', loadComponent:()=> import('./pages/dependente/dependente.component').then((c)=> c.DependenteComponent)},
         {path:'lista-dependentes', loadComponent:()=> import('./pages/lista-dependente/lista-dependente.component').then((c)=> c.ListaDependenteComponent)},
       ]},
       {path:'perfil', loadComponent:()=> import('./pages/perfil/perfil.component').then((c)=> c.PerfilComponent)},

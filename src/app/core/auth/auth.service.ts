@@ -18,15 +18,16 @@ export class AuthService {
   async auth(body:{email:string, password:string}) {
     return firstValueFrom(this.httpClient.post<userResponse>(this.apiUrl.auth, body))
     .then((response)=>{
+      this.userData = response.user
       localStorage.setItem('userData', JSON.stringify(response.user))
       localStorage.setItem('token', response.access_token)
-      console.log(response.user.firstAccess)
+      
       if(response.user.firstAccess){
         this.router.navigate(['/primeiro-acesso'])
       }else {
         this.router.navigate(['/'])
       }
-     
+     return response.user
     })
     .catch((error)=>{
       throw error
@@ -42,7 +43,7 @@ export class AuthService {
     oldPassword: string ;
     newPassword: string;
   }){
-    return firstValueFrom(this.httpClient.put(this.apiUrl.dataUser+`/${this.userData.id}`, body))
+    return firstValueFrom(this.httpClient.put(this.apiUrl.dataUser+`/${this.userData.id}/password`, body))
      
   }
 }

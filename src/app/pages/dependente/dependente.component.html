@@ -56,7 +56,11 @@
                                 <div class="ui radio checkbox">
                                     <input type="radio" name="relationship" value="conjuge"
                                         formControlName="relationship">
-                                    <label>Cônjuge</label>
+                                    <label>Cônjuge
+                                        @if(warnMsg.status && dependentForm.get('relationship')?.value == 'filho'){
+                                        <br><b>{{warnMsg.msg }}</b>
+                                        }
+                                    </label>
                                 </div>
                             </div>
                             <div class="field">
@@ -74,15 +78,18 @@
                     </div>
                     <div class="ui form">
 
-
-                        @if(dependentForm.get('relationship')?.value === 'filho'){
-                        <div class="field">
-                            <div class="ui checkbox">
-                                <input type="checkbox" formControlName="hasDisability">
-                                <label>Possui deficiência</label>
+                        <div class="grouped fields">
+                            @if(dependentForm.get('relationship')?.value === 'filho'){
+                            <label>Deficiência:</label>
+                            <div class="field">
+                                <div class="ui checkbox">
+                                    <input type="checkbox" formControlName="hasDisability">
+                                    <label>Possui deficiência</label>
+                                </div>
                             </div>
+                            }
                         </div>
-                        }
+
                     </div>
                 </div>
             </div>
@@ -125,16 +132,21 @@
 
         </div>
         @if (updateMessage) {
-            <span class="update-message" [ngClass]="updateMessage.status">
-                {{updateMessage.message}}
-                
-            </span>
+        <span class="update-message" [ngClass]="updateMessage.status">
+            {{updateMessage.message}}
+
+        </span>
         }
 
 
         <div class="container-button" #templete>
-            <button class="ui button" type="submit" [disabled]="dependentForm.invalid"
-                (click)="submit()">Cadastrar</button>
+            @if(submitType === 'set'){
+                <button class="ui button" type="submit" [disabled]="dependentForm.invalid" (click)="setDependent()">Cadastrar
+                </button>
+            }@else {
+                <button class="ui button" type="submit" [disabled]="dependentForm.invalid" (click)="updateDependent()">Editar
+                </button>
+            }
 
         </div>
 
@@ -150,16 +162,16 @@
         <div class="header">
             <img src="img/white-logo.png" alt="">
         </div>
-        <h2  class="dialog-title">
-            Cadastro efetuado com sucesso !
+        <h2 class="dialog-title">
+            Cadastro efetuado com sucesso!
         </h2>
     </div>
 
     <mat-dialog-content>
-        Aguarde a aprovação do seu cadastro
+        Aguarde a aprovação do seu cadastro.
     </mat-dialog-content>
-    <mat-dialog-actions >
-        <button class="ui button primary" type="button" (click)="closeDialog()" >OK</button>
+    <mat-dialog-actions>
+        <button class="ui button primary" type="button" (click)="closeDialog()">OK</button>
     </mat-dialog-actions>
 </ng-template>
 
@@ -168,14 +180,14 @@
         <div class="header">
             <img src="img/white-logo.png" alt="">
         </div>
-        <h2  class="dialog-title">
-            Deseja mudar suas informações ?
+        <h2 class="dialog-title">
+            Deseja mudar suas informações?
         </h2>
     </div>
 
-    <mat-dialog-actions >
-        <button class="ui button primary" type="button" >Sim</button>
-        <button class="ui button" type="button" >Cancelar</button>
+    <mat-dialog-actions>
+        <button class="ui button primary" type="button">Sim</button>
+        <button class="ui button" type="button">Cancelar</button>
     </mat-dialog-actions>
 </ng-template>
 
@@ -189,24 +201,24 @@
         <div class="field">
             <div class="ui labeled input">
                 <div class="ui label">Senha Atual:</div>
-                <input type="password"  placeholder="Sua senha atual">
+                <input type="password" placeholder="Sua senha atual">
             </div>
         </div>
         <div class="field">
             <div class="ui labeled input">
                 <div class="ui label">Nova Senha:</div>
-                <input type="password"  placeholder="Nova senha">
+                <input type="password" placeholder="Nova senha">
             </div>
         </div>
         <div class="field">
             <div class="ui labeled input">
                 <div class="ui label">Confirme a Senha:</div>
-                <input type="password"  placeholder="Digite novamente...">
+                <input type="password" placeholder="Digite novamente...">
             </div>
         </div>
     </form>
     <mat-dialog-actions class="">
         <button class="ui button primary" type="button">Alterar</button>
-        <button class="ui button" type="button" >Cancelar</button>
+        <button class="ui button" type="button">Cancelar</button>
     </mat-dialog-actions>
 </ng-template>

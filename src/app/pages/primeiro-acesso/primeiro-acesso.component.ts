@@ -1,6 +1,7 @@
+import { firstValueFrom } from 'rxjs';
 import { CoreService } from './../../core/services/core.service';
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -16,10 +17,11 @@ export class PrimeiroAcessoComponent implements OnInit{
   private authService = inject(AuthService);
   private dataService = inject(CoreService)
   private fb = inject(NonNullableFormBuilder)
+  
   userData:UserData = JSON.parse(localStorage.getItem('userData') as string)
-
+  private route = inject(Router)
   passwordForm = this.fb.group({
-    oldPassword:['', Validators.required],
+    oldPassword:['leite788'],
     newPassword:['', [Validators.required]],
     confirmPassword:['',[Validators.required]]
   })
@@ -31,22 +33,32 @@ export class PrimeiroAcessoComponent implements OnInit{
     this.authService.logOff()
   }
 
-  submit(){
+  async submit(){
     const data = {
       oldPassword:this.passwordForm.value.oldPassword!,
       newPassword:this.passwordForm.value.newPassword!
      }
     this.authService.passwordChange(data)
-    .then(()=> {
-      const data = this.userData as any
+    .then(async ()=> {
+      const data = this.userData as {[key:string]:any}
       const formData = new FormData()
       Object.keys(this.userData).forEach(key => {
-          formData.append(key, data) 
+        if(key == 'firstAccess'){
+          formData.append(key, 'false') 
+        }
+        else{
+          formData.append(key, data[key]) 
+        }
+          
       });
-      formData.forEach((key,value)=>{
+      formData.forEach((value,key)=>{
         console.log(key,value)
       })
-      // this.dataService.updateUserData(this.userData.id, formData)
+      await firstValueFrom(this.dataService.updateUserData(this.userData.id, formData))
+      .then((response)=>{
+        console.log(response)
+      })
+      this.route.navigate(['/'])
     })
   }
 

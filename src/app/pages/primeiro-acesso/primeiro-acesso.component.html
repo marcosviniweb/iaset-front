@@ -44,7 +44,7 @@
        
     </form>
     <div class="actions">
-        <button class="ui button primary" type="button" [disabled]="passwordForm.invalid" >Confirmar</button>
+        <button class="ui button primary" type="button" [disabled]="passwordForm.invalid" (click)="submit()" >Confirmar</button>
         <button class="ui button" type="button" (click)="logOff()" >Voltar</button>
     </div>
 </div>

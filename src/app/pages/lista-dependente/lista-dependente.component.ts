@@ -1,36 +1,42 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CoreService } from '../../core/services/core.service';
-import {  map, Observable, shareReplay, Subject, takeUntil, tap } from 'rxjs';
+import { firstValueFrom, map, Observable, shareReplay, Subject, takeUntil, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { CardData } from '../../core/models/cardData.model';
-import { Depedent } from '../../core/models/dependents.model';
+import { Dependent } from '../../core/models/dependents.model';
+import { RouterModule } from '@angular/router';
+import { UserData } from '../../core/models/userData.model';
 
 @Component({
   selector: 'app-lista-dependente',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './lista-dependente.component.html',
   styleUrl: './lista-dependente.component.scss'
 })
-export class ListaDependenteComponent implements OnInit, OnDestroy{
-  private serviceCore = inject(CoreService);
+export class ListaDependenteComponent implements  OnDestroy {
+  private dataService = inject(CoreService);
 
-  userData = JSON.parse(localStorage.getItem('userData') as string);
+  userData:UserData = JSON.parse(localStorage.getItem('userData') as string);
 
   destroy$ = new Subject();
 
-  listDependents$:Observable<Depedent[]> = this.serviceCore.getDependent(this.userData.id)
-  .pipe(
-    takeUntil(this.destroy$),
-    shareReplay(1),
-  )
- 
+  listDependents$: Observable<Dependent[]> = this.dataService
+    .getDependents(this.userData.id)
+    .pipe(
+      takeUntil(this.destroy$),
+    )
 
-  ngOnInit(): void {
-  
+  deleteDependent(dependentId:number){
+    firstValueFrom(this.dataService.deleteDependent(this.userData.id, dependentId))
+    .then((sucess)=> {
+      console.log(sucess)})
+    .catch(error=>{
+      throw error
+    })
   }
 
   ngOnDestroy(): void {
-      this.destroy$.next(''),
+    this.destroy$.next(''),
       this.destroy$.complete()
   }
 }

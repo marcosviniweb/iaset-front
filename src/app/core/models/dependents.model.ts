@@ -1,4 +1,4 @@
-export interface Depedent {
+export interface Dependent {
     id: number;
     name: string;
     birthDate: string; // Pode ser Date se for manipulado como objeto Date

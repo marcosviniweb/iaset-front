@@ -118,7 +118,7 @@
      
     <div class="container-button" #templete>
         <button class="ui button" type="submit" (click)="openDialog(templeteConfirm)" >Editar</button>
-        <button class="ui button" type="submit" (click)="openDialog(templatePass)" >Alterar Senha</button>
+        <button class="ui button" type="submit" (click)="openDialog(templatePass, '400px')" >Alterar Senha</button>
     </div>
        
         
@@ -173,7 +173,7 @@
             <div class="field">
                 <div class="ui labeled action input">
                     <div class="ui label">* Senha Atual:</div>
-                    <input #current type="password" formControlName="oldPassword" placeholder="Senha">
+                    <input #current type="password" formControlName="oldPassword" placeholder="A sua senha atual">
                     <button class="ui icon button" (click)="current.type === 'password'? current.type = 'text':current.type = 'password'">
                         @if(current.type === 'password'){
                             <i  class="eye  icon"></i>
@@ -187,7 +187,7 @@
             </div>
             <div class="field">
                 <div class="ui labeled action input">
-                    <div class="ui label">* Senha:</div>
+                    <div class="ui label">* Nova senha:</div>
                     <input #pass type="password" formControlName="newPassword" placeholder="Senha">
                     <button class="ui icon button" (click)="pass.type === 'password'? pass.type = 'text':pass.type = 'password'">
                         @if(pass.type === 'password'){
@@ -219,8 +219,14 @@
             </div>
            
         </form>
+        @if (updateMessagePass) {
+            <span class="update-message" [ngClass]="updateMessagePass.status">
+                {{updateMessagePass.message}}
+                
+            </span>
+        }
         <div class="actions">
-            <button class="ui button primary" type="button" [disabled]="passwordForm.invalid" >Alterar</button>
+            <button class="ui button primary" type="button" [disabled]="passwordForm.invalid"  (click)="editUserPassword()">Alterar</button>
             <button class="ui button" type="button" (click)="closeDialog()" >Voltar</button>
         </div>
     </div>

@@ -48,6 +48,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
   profileImg: string | undefined; // Variável para armazenar a URL da imagem
   destroy$ = new Subject()
   updateMessage = {status:'', message:''}
+  updateMessagePass = {status:'', message:''}
 
   ngOnInit(): void {
     this.passwordForm.setValidators(this.passwordMatchValidator)
@@ -96,11 +97,11 @@ export class PerfilComponent implements OnInit, OnDestroy {
     }
   }
 
-  openDialog(template:TemplateRef<HTMLElement>){
+  openDialog(template:TemplateRef<HTMLElement>, height?:string){
     this.dialog.open(template,{
       width:'100%',
       maxWidth:'500px',
-      height:'400px',
+      height:height? height:'300px',
       panelClass:'padding-modal',
     })
   }
@@ -146,7 +147,22 @@ export class PerfilComponent implements OnInit, OnDestroy {
   }
   
   editUserPassword(){
-    // this.authService.passwordChange()
+    const data = {
+      oldPassword:this.passwordForm.value.oldPassword!,
+      newPassword:this.passwordForm.value.newPassword!
+     }
+    this.authService.passwordChange(data)
+    .then((sucess:any)=> {
+      const responseMsg = sucess.message
+      this.updateMessagePass =  {status:'sucess', message:responseMsg}
+    })
+    .catch((error:HttpErrorResponse)=>{
+     error.error.message
+        ?this.updateMessagePass ={status:'error', message:error.error.message}
+      :this.updateMessagePass = {status:'error', message:'Ocorreu um erro, tente novamente. Cod:'+error.status}
+      console.log( error.error.message  )
+      throw error
+    })
   }
 
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {

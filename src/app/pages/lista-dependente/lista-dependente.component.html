@@ -15,18 +15,18 @@
                     <td>{{dependente.name}}</td>
                     <td>{{dependente.relationship == 'filho'? 'Filho(a)':'Cônjuge'}}</td>
                     <td class="right aligned">
-            
-                        <button class="ui icon button primary">
+                        <button class="ui icon button primary" [routerLink]="['/dependente', dependente.id]">
                             <i class="edit icon"></i>
                             Editar
                           </button>
-                        <button class="ui icon button primary">
+                        <button class="ui icon button primary" (click)="deleteDependent(dependente.id)">
                             <i class="trash icon"></i>
                             Deletar
                           </button>
                     </td>
                     
                 </tr>
+
             } @empty {
                 <tr >
                     <td class="center aligned">
