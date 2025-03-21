@@ -1,0 +1,1 @@
+export const UrlImg = 'http://iaset.com.br/backend-iaset/'

@@ -1,0 +1,213 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 20px;
+    height: 100%;
+    width: 100%;
+    .title{
+        display: flex;
+        align-items: center;
+        width: 100%;
+        i{  display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            color: #0045B7;
+           
+        }
+        h2{
+            margin: 0;
+            font-size: 40px;
+            font-weight: 300;
+        }
+    }
+
+    .direction-toggle {
+        margin: 20px 0;
+        
+        .toggle-btn {
+            padding: 8px 16px;
+            background: #0045B7;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+            
+            &:hover {
+                background: #003490;
+            }
+            
+            &:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(0, 69, 183, 0.5);
+            }
+        }
+    }
+
+    .carousel-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 500px;
+        height: 70vh;
+        position: relative;
+        
+        // Quando é horizontal
+        &.horizontal {
+            flex-direction: row;
+            max-width: 80%;
+            height: 400px;
+            
+            .carousel-content {
+                height: 100%;
+                width: 80%;
+                
+                .carousel-slide {
+                    flex-direction: row;
+                }
+            }
+        }
+        
+        .carousel-arrow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: background-color 0.3s;
+            z-index: 2;
+            
+            &.left, &.right {
+                margin: 0 10px;
+            }
+            
+            &:hover {
+                background-color: #e0e0e0;
+            }
+            
+            i {
+                color: black;
+                font-size: 20px;
+            }
+            
+            &:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(0, 69, 183, 0.5);
+            }
+        }
+        
+        .carousel-content {
+            width: 100%;
+            height: 450px;
+            overflow: hidden;
+            position: relative;
+            
+            .carousel-slide {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                height: 100%;
+                transition: transform 0.5s ease;
+                
+                .carousel-item {
+                    flex: 0 0 100%;
+                    height: 100%;
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    
+                    &:focus {
+                        outline: none;
+                    }
+                }
+            }
+        }
+        
+        .carousel-indicators {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            
+            &.horizontal {
+                flex-direction: row;
+                right: auto;
+                top: auto;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                
+                .indicator {
+                    margin: 0 5px;
+                }
+            }
+            
+            .indicator {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background-color: #ddd;
+                margin: 5px 0;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                
+                &.active {
+                    background-color: black;
+                }
+                
+                &:focus {
+                    outline: none;
+                    box-shadow: 0 0 0 2px rgba(0, 69, 183, 0.5);
+                }
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 1280px) {
+    .title{
+        display: none !important;
+    }
+}
+@media only screen and (max-height: 680px) {
+    .carousel-container{
+        height: 90vh !important;
+    }
+}
+
+.warning-card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    background: rgba(128, 128, 128, 0.24);
+    box-shadow: rgba(0, 0, 0, 0.521);
+    padding: 10px;
+    width: 100%;
+    max-width: 500px;
+    i{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+        color: #0045B7  ;
+    }
+    h2{
+        text-align: center;
+        font-weight: 400;
+        
+    }
+}

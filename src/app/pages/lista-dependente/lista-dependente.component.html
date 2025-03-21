@@ -1,0 +1,43 @@
+<section>
+    @if(listDependents$ | async; as dependentes){
+    <table class="ui inverted blue table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Relação</th>
+                <th class="right aligned"></th>
+            </tr>
+        </thead>
+       
+        <tbody>
+            @for (dependente of dependentes ; track dependente.id ) {
+                <tr>
+                    <td>{{dependente.name}}</td>
+                    <td>{{dependente.relationship == 'filho'? 'Filho(a)':'Cônjuge'}}</td>
+                    <td class="right aligned">
+            
+                        <button class="ui icon button primary">
+                            <i class="edit icon"></i>
+                            Editar
+                          </button>
+                        <button class="ui icon button primary">
+                            <i class="trash icon"></i>
+                            Deletar
+                          </button>
+                    </td>
+                    
+                </tr>
+            } @empty {
+                <tr >
+                    <td class="center aligned">
+                        <h2 class="empty">Sem dependentes cadastrados</h2>
+                    </td>
+                </tr>
+            }
+            
+        </tbody>
+        
+
+    </table>
+    }
+</section>

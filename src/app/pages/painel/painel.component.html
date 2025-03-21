@@ -1,0 +1,144 @@
+<ng-container *ngTemplateOutlet="templateRef "></ng-container>
+
+
+<ng-template #mobile>
+
+    @if(pathRoute$|async; as path){
+      
+        <section >
+            <h2 class="title"> Meu Cartão </h2>
+            @if(acessToCard$ | async ){
+
+          
+            @if(userCards.length > 1){
+              <div class="carousel-container" [class.horizontal]="!isVertical()">
+                <!-- Setas para navegação quando vertical -->
+                <ng-container *ngIf="isVertical()">
+                  <div class="carousel-arrow up" (click)="navigateCarousel(-1)" tabindex="0" (keydown.enter)="navigateCarousel(-1)">
+                    <i class="angle up icon"></i>
+                  </div>
+                </ng-container>
+                
+                <!-- Setas para navegação quando horizontal -->
+                <ng-container *ngIf="!isVertical()">
+                  <div class="carousel-arrow left" (click)="navigateCarousel(-1)" tabindex="0" (keydown.enter)="navigateCarousel(-1)">
+                    <i class="angle left icon"></i>
+                  </div>
+                </ng-container>
+                
+                <div class="carousel-content">
+                  <div class="carousel-slide" [style.transform]="getTransformStyle()">
+                    <div *ngFor="let card of userCards; let i = index" class="carousel-item" [attr.tabindex]="i + 1">
+                        <div class="card">
+                            <div class="preview-card">
+                                <div class="data">
+                                    <div class="items">
+                                        <h3>{{card.name}}</h3>
+                                        <p>NOME DO ASSOCIADO</p>
+                                    </div>
+                                    <div class="items">
+                                        <h3>{{card.matricula}}</h3>
+                                        <p>Nª DA MATRÍCULA</p>
+                                    </div>
+                                    <div class="items">
+                                        <h3>{{card.cpf}}</h3>
+                                        <p>CPF</p>
+                                    </div>
+                                </div>
+                                <div class="show-card">
+                                    <button [routerLink]="['/card', i]" class="ui icon button">
+                                        <i class="eye icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                
+               
+                 
+                <ng-container *ngIf="isVertical()">
+                  <div class="carousel-arrow down" (click)="navigateCarousel(1)" tabindex="0" (keydown.enter)="navigateCarousel(1)">
+                    <i class="angle down icon"></i>
+                  </div>
+                </ng-container>
+                
+                <!-- Setas para navegação quando horizontal -->
+                <ng-container *ngIf="!isVertical()">
+                  <div class="carousel-arrow right" (click)="navigateCarousel(1)" tabindex="0" (keydown.enter)="navigateCarousel(1)">
+                    <i class="angle right icon"></i>
+                  </div>
+                </ng-container>
+                
+                <div class="carousel-indicators" [class.horizontal]="!isVertical()">
+                  <span 
+                    *ngFor="let card of userCards; let i = index" 
+                    class="indicator" 
+                    [class.active]="i === currentCardIndex"
+                    (click)="setCurrentCard(i)"
+                    tabindex="0"
+                    (keydown.enter)="setCurrentCard(i)">
+                  </span>
+                </div>
+              </div>
+            
+            } @else {
+              <div class="card">
+                <div class="preview-card">
+                    <div class="data">
+                        <div class="items">
+                            <h3>{{CardData.name}}</h3>
+                            <p>NOME DO ASSOCIADO</p>
+                        </div>
+                        <div class="items">
+                            <h3>{{CardData.matricula}}</h3>
+                            <p>Nª DA MATRÍCULA</p>
+                        </div>
+                        <div class="items">
+                            <h3>{{CardData.cpf}}</h3>
+                            <p>CPF</p>
+                        </div>
+                    </div>
+                    <div class="show-card">
+                        <button [routerLink]="['/card']" class="ui icon button">
+                            <i class="eye icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+              
+            }
+          }@else {
+            <div class="warning-card">
+              <i class="lock icon"></i>
+              <h2>Complete suas informações de cadastro para ter acesso ao cartão</h2>
+              <div class="container-button">
+                <button class="ui button primary" [routerLink]="['/perfil']"  >Terminar cadastro</button>
+              </div>
+          </div>
+          }
+            
+         
+            <quick-access />
+        </section>
+
+    }
+    @else {
+        <router-outlet ></router-outlet>
+    }
+
+</ng-template>
+
+<ng-template #desktop>
+    <div class="content">
+        <div class="container-content">
+            <router-outlet></router-outlet>
+        </div>
+        <div class="container-menu">
+            <quick-access></quick-access>
+        </div>
+
+    </div>
+
+</ng-template>

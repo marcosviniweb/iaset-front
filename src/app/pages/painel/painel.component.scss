@@ -1,0 +1,282 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+
+    .title {
+        width: 100%;
+        font-weight: 400;
+        position: relative;
+        left: 20px;
+        top: 20px;
+        margin-bottom: 40px;
+    }
+
+    .card {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+
+        .preview-card {
+            display: flex;
+            overflow: hidden;
+            flex: 1 1 100%;
+            width: 100%;
+            max-width: 440px;
+            min-width: 340px;
+            height: 200px;
+            background: #cecece65;
+            border-radius: 10px;
+
+            .data {
+                padding: 10px;
+                display: flex;
+                flex-direction: column;
+                width: 75%;
+                height: 100%;
+
+                .items {
+                    margin-bottom: 10px;
+                    
+                    h3,
+                    p {
+                        margin: 0;
+                    }
+                    h3{
+                        font-size: 20px;
+                    }
+
+                    p {
+                        font-size: 10px;
+                    }
+                }
+            }
+
+            .show-card {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 25%;
+                height: 100%;
+
+                button {
+                    margin: 0 !important;
+                    height: 100%;
+                    width: 100%;
+                    font-size: 30px;
+                    .icon{
+                        color: #0045B7;
+                    }
+                }
+            }
+        }
+    }
+}
+
+section{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+
+}
+.content{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    max-height: 100%;
+    margin: 10px;
+    overflow: hidden;
+
+    .container-content{
+        display: block;
+        width: 100%;
+        height: 100%;
+         overflow: auto;
+         padding: 10px;
+
+    }
+    .container-menu{
+        padding: 10px;
+        border-left: 2px solid #cecece;
+        width: 35%;
+        min-width: 360px;
+    }
+  }
+  
+  ::-webkit-scrollbar {
+    width: 5px;
+    background-color: #f1f1f1; /* Cor de fundo da barra de rolagem */
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: #0045b7; /* Cor da barra de rolagem */
+    border-radius: 10px;
+  }
+  
+.carousel-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 500px;
+    height: 70vh;
+    position: relative;
+    margin-bottom: 50px;
+
+    &.horizontal {
+        flex-direction: row;
+        max-width: 100%;
+        height: 400px;
+
+        .carousel-content {
+            height: 100%;
+            width: 100%;
+
+            .carousel-slide {
+                flex-direction: row;
+            }
+        }
+    }
+
+    .carousel-arrow {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #0045B7;
+        color: white;
+        cursor: pointer;
+        margin: 10px 0;
+        transition: background-color 0.3s;
+        z-index: 2;
+
+        &.left, &.right {
+            position: absolute;
+            margin: 0 10px;
+            bottom: -40px;
+        }
+        &.left{
+            left: 10px;
+        }
+        &.right{
+            right: 10px;
+        }
+        &:hover {
+        }
+
+        i {
+            color: white;
+            font-size: 20px;
+        }
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 69, 183, 0.5);
+        }
+    }
+
+    .carousel-content {
+        width: 100%;
+        height: 450px;
+        overflow: hidden;
+        position: relative;
+
+        .carousel-slide {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease;
+
+            .carousel-item {
+                flex: 0 0 100%;
+                height: 100%;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                &:focus {
+                    outline: none;
+                }
+            }
+        }
+    }
+
+    .carousel-indicators {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+
+        &.horizontal {
+            flex-direction: row;
+            right: auto;
+            top: auto;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+
+            .indicator {
+                margin: 0 5px;
+            }
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin: 5px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+
+            &.active {
+                background-color: #0045B7;
+            }
+
+            &:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(0, 69, 183, 0.5);
+            }
+        }
+    }
+}
+  
+.warning-card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    background: rgba(128, 128, 128, 0.24);
+    box-shadow: rgba(0, 0, 0, 0.521);
+    padding: 10px;
+    width: 100%;
+    max-width: 500px;
+    i{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+        color: #0045B7  ;
+    }
+    h2{
+        text-align: center;
+        font-weight: 400;
+        
+    }
+}

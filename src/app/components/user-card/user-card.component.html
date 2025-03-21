@@ -1,0 +1,53 @@
+<!-- Start of Selection -->
+<div class="user-card" >
+    <div class="card-header">
+        <div class="user-name">
+            <h1>{{cardDataUser?.name}}</h1>
+            <p>NOME DO ASSOCIADO</p>
+        </div>
+        
+        <div class="qr-code">
+            <img src="/img/qrTeste.png" alt="QR Code" />
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="code-photo">
+            @if(cardDataUser?.matricula){
+                <div class="registration-code" >
+                    <h2>{{cardDataUser?.matricula}}</h2>
+                    <p>Nª DA MATRÍCULA</p>
+                </div>
+            }
+            @if(cardDataUser?.photo){
+                <div class="photo">
+                    <img [src]="apiUrlImg+cardDataUser?.photo" alt="Foto do Associado" />
+                </div>
+            }
+        </div>
+        <div class="info">
+            <div class="cpf">
+                <h2>{{cardDataUser?.cpf | cpfMask  }}</h2>
+                <p>CPF</p>
+            </div>
+            <div class="date">
+                @if(cardDataUser?.birthDay){
+                    <h2>{{cardDataUser?.birthDay | date:'dd/MM/yyyy'}}</h2>
+                    <p>DATA DE NASCIMENTO</p>
+                }@else if(cardDataUser?.birthDate){
+                    <h2>{{cardDataUser?.birthDate | date:'dd/MM/yyyy'}}</h2>
+                    <p>DATA DE NASCIMENTO</p>    
+                }
+                
+            </div>
+            <div class="registration-date">
+                @if(cardDataUser?.createdAt){
+
+                    <h2>{{cardDataUser?.createdAt | date:'dd/MM/yyyy'}}</h2>
+                    <p>ASSOCIADO DESDE</p>
+                }
+            </div>            
+        </div>
+    </div>
+    
+        <img class="logo" src="/img/white-logo.png" alt="Logo" />
+</div>

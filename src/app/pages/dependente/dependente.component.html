@@ -1,0 +1,212 @@
+<section>
+
+    <div class="ui horizontal divider">
+        <div class="header">
+            <i class="id card outline icon"></i>
+
+            <h2>Cadastro de Dependente</h2>
+        </div>
+    </div>
+    <div class="ui inverted divider"></div>
+    <form class="ui form" [formGroup]="dependentForm">
+
+        <div class="ui inverted divider"></div>
+        <div class="two fields">
+            <div class="field">
+                <div class="ui labeled input">
+                    <div class="ui label">Nome:</div>
+                    <input type="text" formControlName="name" placeholder="Nome">
+                </div>
+                @if(dependentForm.get('name')?.hasError('required') && dependentForm.get('name')?.touched){
+                <span class="error-msg"> * Campo Obrigatório *</span>
+                }
+            </div>
+            <div class="field">
+                <div class="ui labeled input">
+                    <div class="ui label">CPF:</div>
+                    <input type="text" formControlName="cpf" placeholder="CPF" CpfCnpjMask maxlength="14">
+                </div>
+                @if(dependentForm.get('cpf')?.hasError('required') && dependentForm.get('cpf')?.touched){
+                <span class="error-msg"> * Campo Obrigatório *</span>
+                }
+            </div>
+
+        </div>
+        <div class="two fields">
+            <div class="eight wide field">
+                <div class="ui labeled input">
+                    <div class="ui label">Data de Nascimento:</div>
+                    <input type="date" placeholder="DD/MM/YYYY" formControlName="birthDate">
+                </div>
+                @if(dependentForm.get('birthDate')?.hasError('required') && dependentForm.get('birthDate')?.touched){
+                <span class="error-msg"> * Campo Obrigatório *</span>
+                }
+            </div>
+
+
+        </div>
+        <div class="two fields">
+            <div class="field">
+                <label>Documentos de certificação:</label>
+                <div class="content">
+                    <div class="ui form">
+                        <div class="grouped fields">
+                            <label>Relação:</label>
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input type="radio" name="relationship" value="conjuge"
+                                        formControlName="relationship">
+                                    <label>Cônjuge</label>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input type="radio" name="relationship" value="filho"
+                                        formControlName="relationship">
+                                    <label>Filho</label>
+                                </div>
+                            </div>
+                        </div>
+                        @if(dependentForm.get('relationship')?.hasError('required') &&
+                        dependentForm.get('relationship')?.touched){
+                        <span class="error-msg"> * Campo Obrigatório *</span>
+                        }
+                    </div>
+                    <div class="ui form">
+
+
+                        @if(dependentForm.get('relationship')?.value === 'filho'){
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <input type="checkbox" formControlName="hasDisability">
+                                <label>Possui deficiência</label>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui labeled input file">
+                    <div class="container-file">
+                        <label>* Documento de certificação *</label>
+                    </div>
+                    <div class="container-content">
+                        <p></p>
+                        <input #file type="file" (change)="onFileSelected($event)">
+                        @if(dependentForm.get('relationship')?.value){
+                        <h4>*Documentos necessários*</h4>
+                        }
+
+                        @if(dependentForm.get('relationship')?.value == 'conjuge'){
+                        <ul>
+                            <li>Certidão de casamento ou união:</li>
+                        </ul>
+                        }@else if(dependentForm.get('relationship')?.value == 'filho') {
+                        <ul>
+                            <li>Certidão de nascimento:</li>
+                            <li>Documento de adoção:</li>
+                            <li>Comprovante de matrícula ou faculdade:</li>
+                            @if(this.dependentForm.get('hasDisability')?.value){
+                            <li>Laudo médico de deficiência:</li>
+                            }
+
+                        </ul>
+                        }
+                        @if(dependentForm.get('file')?.value){
+
+                        <span>{{ fileName}}</span>
+                        }
+                        <button class="ui button primary" (click)="file.click()">Selecione o Documento</button>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        @if (updateMessage) {
+            <span class="update-message" [ngClass]="updateMessage.status">
+                {{updateMessage.message}}
+                
+            </span>
+        }
+
+
+        <div class="container-button" #templete>
+            <button class="ui button" type="submit" [disabled]="dependentForm.invalid"
+                (click)="submit()">Cadastrar</button>
+
+        </div>
+
+
+    </form>
+
+
+</section>
+
+
+<ng-template #templeteMsg>
+    <div>
+        <div class="header">
+            <img src="img/white-logo.png" alt="">
+        </div>
+        <h2  class="dialog-title">
+            Cadastro efetuado com sucesso !
+        </h2>
+    </div>
+
+    <mat-dialog-content>
+        Aguarde a aprovação do seu cadastro
+    </mat-dialog-content>
+    <mat-dialog-actions >
+        <button class="ui button primary" type="button" (click)="closeDialog()" >OK</button>
+    </mat-dialog-actions>
+</ng-template>
+
+<ng-template #templeteConfirm>
+    <div>
+        <div class="header">
+            <img src="img/white-logo.png" alt="">
+        </div>
+        <h2  class="dialog-title">
+            Deseja mudar suas informações ?
+        </h2>
+    </div>
+
+    <mat-dialog-actions >
+        <button class="ui button primary" type="button" >Sim</button>
+        <button class="ui button" type="button" >Cancelar</button>
+    </mat-dialog-actions>
+</ng-template>
+
+<ng-template #templatePass>
+    <div>
+        <div class="header">
+            <img src="img/white-logo.png" alt="">
+        </div>
+    </div>
+    <form class="ui form dialog-form">
+        <div class="field">
+            <div class="ui labeled input">
+                <div class="ui label">Senha Atual:</div>
+                <input type="password"  placeholder="Sua senha atual">
+            </div>
+        </div>
+        <div class="field">
+            <div class="ui labeled input">
+                <div class="ui label">Nova Senha:</div>
+                <input type="password"  placeholder="Nova senha">
+            </div>
+        </div>
+        <div class="field">
+            <div class="ui labeled input">
+                <div class="ui label">Confirme a Senha:</div>
+                <input type="password"  placeholder="Digite novamente...">
+            </div>
+        </div>
+    </form>
+    <mat-dialog-actions class="">
+        <button class="ui button primary" type="button">Alterar</button>
+        <button class="ui button" type="button" >Cancelar</button>
+    </mat-dialog-actions>
+</ng-template>

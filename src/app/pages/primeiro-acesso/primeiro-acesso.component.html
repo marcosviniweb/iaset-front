@@ -1,0 +1,50 @@
+<div class="content">
+
+    <div class="header">
+        <img src="img/white-logo.png" alt="">
+    </div>
+    <div class="alert">
+        <h3>Este é o seu primeiro acesso. <i class="unlock icon"></i></h3>
+        <p>Recomendamos que você altere a senha para uma de sua confiança.</p>
+    </div>
+    <form class="ui form dialog-form" [formGroup]="passwordForm">
+
+        <div class="field">
+            <div class="ui labeled action input">
+                <div class="ui label">* Senha:</div>
+                <input #pass type="password" formControlName="newPassword" placeholder="Senha">
+                <button class="ui icon button" (click)="pass.type === 'password'? pass.type = 'text':pass.type = 'password'">
+                    @if(pass.type === 'password'){
+                        <i  class="eye  icon"></i>
+                    }@else{
+                        <i class="eye slash icon"></i>
+                    }
+                    
+                  </button>
+            </div>
+           
+        </div>
+        <div class="field">
+            <div class="ui labeled action input">
+                <div class="ui label">* Confirme:</div>
+                <input #confirm type="password" formControlName="confirmPassword" placeholder="Digite novamente">
+                <button class="ui icon button" (click)="confirm.type === 'password'? confirm.type = 'text':confirm.type = 'password'">
+                    @if(confirm.type === 'password'){
+                        <i  class="eye  icon"></i>
+                    }@else{
+                        <i class="eye slash icon"></i>
+                    }
+                    
+                  </button>
+            </div>
+            @if(passwordForm.hasError('mismatch')){
+                <span class="error-msg"> *As senhas devem ser iguais *</span>
+            }
+        </div>
+       
+    </form>
+    <div class="actions">
+        <button class="ui button primary" type="button" [disabled]="passwordForm.invalid" >Confirmar</button>
+        <button class="ui button" type="button" (click)="logOff()" >Voltar</button>
+    </div>
+</div>

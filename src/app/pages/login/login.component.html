@@ -1,0 +1,54 @@
+<img class="logo" src="/img/logo-iaset.png" alt="Logo-Iaset">
+<div class="container-icon"></div>
+<div class="ui middle aligned center aligned grid fluid card">
+    <div class="column">
+
+        <form class="ui large form" [formGroup]="authForm">
+            <div class="ui stacked segment">
+                <div class="field" [ngClass]="{'error': errorMsg?.input == 'user'}">
+                    <div class="ui left icon input">
+                        <i class="user icon"></i>
+                        <input type="text" name="email" placeholder="Email ou CPF do titular" formControlName="emailOrCpf">
+                    </div>
+                </div>
+                <div class="field" [ngClass]="{'error': errorMsg?.input == 'pass'}">
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        <input type="password" name="password" placeholder="Digite sua senha..." formControlName="pass">
+                    </div>
+                    @if (errorMsg) {
+                        <span class="error" >{{errorMsg.message}}</span>
+                    }
+                    
+                </div>
+                @if(loading){
+                    <div class="ui segment blue loadered">
+                        <div class="ui active inverted dimmer">
+                            <div class="ui tiny text loader">Entrando...</div>
+                        </div>
+                        <p></p>
+                    </div>
+              
+                }
+                @else{
+                    <button class="ui fluid large submit button flex" (click)="login()">
+                        <p>Entrar</p>
+                    </button>
+                    <div class="cadastro">
+                        <a [routerLink]="['/cadastro']" routerLinkActive="router-link-active" >Cadastre-se</a>
+                    </div>
+                    <div class="reset-password">
+                        <a  >Esqueceu sua senha ?</a>
+                    </div>
+
+                }
+
+
+            </div>
+
+            <div class="ui error message"></div>
+
+        </form>
+    </div>
+</div>
+

@@ -1,0 +1,71 @@
+<div class="title">
+    <i class="address card icon"></i>
+    <h2>Meu Cartão</h2>
+</div>
+@if (acessToCard$ | async) {
+  @if(userCards.length > 1){
+    <div class="carousel-container" [class.horizontal]="!isVertical()">
+      <!-- Setas para navegação quando vertical -->
+      @if(isVertical()){
+        <div class="carousel-arrow up" (click)="navigateCarousel(-1)" tabindex="0" (keydown.enter)="navigateCarousel(-1)">
+          <i class="angle up icon"></i>
+        </div>
+      }
+      
+      <!-- Setas para navegação quando horizontal -->
+      @if(!isVertical()){
+        <div class="carousel-arrow left" (click)="navigateCarousel(-1)" tabindex="0" (keydown.enter)="navigateCarousel(-1)">
+          <i class="angle left icon"></i>
+        </div>
+      }
+      
+      <div class="carousel-content">
+        <div class="carousel-slide" [style.transform]="getTransformStyle()">
+          <div *ngFor="let card of userCards; let i = index" class="carousel-item" [attr.tabindex]="i + 1">
+            <app-user-card [cardData]="card" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- Setas para navegação quando vertical -->
+      @if(isVertical()){
+        <div class="carousel-arrow down" (click)="navigateCarousel(1)" tabindex="0" (keydown.enter)="navigateCarousel(1)">
+          <i class="angle down icon"></i>
+        </div>
+      }
+      
+      <!-- Setas para navegação quando horizontal -->
+      @if(!isVertical()){
+        <div class="carousel-arrow right" (click)="navigateCarousel(1)" tabindex="0" (keydown.enter)="navigateCarousel(1)">
+          <i class="angle right icon"></i>
+        </div>
+      }
+      
+      <div class="carousel-indicators" [class.horizontal]="!isVertical()">
+        <span 
+          *ngFor="let card of userCards; let i = index" 
+          class="indicator" 
+          [class.active]="i === currentCardIndex"
+          (click)="setCurrentCard(i)"
+          tabindex="0"
+          (keydown.enter)="setCurrentCard(i)">
+        </span>
+      </div>
+    </div>
+  } @else {
+    
+    @for ( card of userCards ; track card.id) {
+      <app-user-card [cardData]="card" />
+    }
+    
+  }
+  
+} @else {
+  <div class="warning-card">
+      <i class="lock icon"></i>
+      <h2>Complete suas informações de cadastro para ter acesso ao cartão</h2>
+      <div class="container-button">
+        <button class="ui button primary" [routerLink]="['/perfil']"  >Terminar cadastro</button>
+      </div>
+  </div>
+}

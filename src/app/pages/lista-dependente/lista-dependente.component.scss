@@ -1,0 +1,15 @@
+:host{
+    border-radius: 10px;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #008cb7d7, #97bad6d7);
+    padding: 10px;
+    section {
+        width: 100%;
+        .empty{
+            font-size: 16px;
+            font-weight: 400;
+        }
+    }
+}

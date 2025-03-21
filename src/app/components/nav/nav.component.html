@@ -1,0 +1,20 @@
+<nav  id="nav">
+  <div class="menu-items" id="menu-items">
+    <button class="button-menu"  id="button-menu" [routerLink]="['/']"  routerLinkActive="router-link-active" [routerLinkActiveOptions]="{exact:true}" >
+      <i class="icon home"></i>
+      <p>ínicio</p>
+    </button>
+    <button class="button-menu"   id="button-menu"[routerLink]="['/perfil']"  routerLinkActive="router-link-active" >
+      <i class="icon user"></i>
+      <p>Perfil</p>
+    </button>
+    <button class="button-menu"  id="button-menu" routerLinkActive="router-link-active">
+      <i class="icon phone"></i>
+      <p>Atendimento</p>
+    </button>
+    <button class="button-menu exit"  id="exit" (click)="logOff()">
+      <i class="icon sign-out"></i>
+      <p>Sair</p>
+    </button>
+  </div>
+</nav>
