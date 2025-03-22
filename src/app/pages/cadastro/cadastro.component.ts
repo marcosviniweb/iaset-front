@@ -39,7 +39,8 @@ export class CadastroComponent implements OnInit {
     phone: ['',],
     password: ['',[Validators.required, Validators.minLength(6)]],
     confirmPassowrd: ['', [Validators.required]],
-    photo: new FormControl<File | null>(null)
+    photo: new FormControl<File | null>(null),
+    firstAccess:false
   })
 
   profileImg: string | undefined; // Variável para armazenar a URL da imagem

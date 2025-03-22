@@ -26,7 +26,7 @@
         <div class="two fields">
             <div class="field">
                 <div class="ui labeled input">
-                    <div class="ui label">*Nome:</div>
+                    <div class="ui label">Nome:</div>
                     <input type="text" formControlName="name" placeholder="Nome">
                 </div>
                 @if(registerForm.get('name')?.hasError('required') && registerForm.get('name')?.touched){
@@ -38,7 +38,7 @@
 
             <div class="field">
                 <div class="ui labeled input">
-                    <div class="ui label">*Email:</div>
+                    <div class="ui label">Email:</div>
                     <input #email type="email" formControlName="email" placeholder="Email">
                 </div>
                 @if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.dirty) {
