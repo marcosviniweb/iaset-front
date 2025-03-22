@@ -149,9 +149,13 @@
                         }
                       </button>
                 </div>
+                <span class="error-msg">
                  @if(registerForm.get('confirmPassowrd')?.hasError('required') && registerForm.get('confirmPassowrd')?.touched){
-                <span class="error-msg">* Campo Obrigatório *</span>
+                * Campo Obrigatório *
+                } @else if(registerForm.hasError('mismatch')&& registerForm.get('confirmPassowrd')?.touched){
+                   * A senhas devem ser iguais *
                 }
+            </span>
             </div>
 
         </div>
@@ -161,7 +165,7 @@
             <span>*Verifique se suas informações estão corretas antes de enviar o formulario !*</span>
         </div>
         <button class="ui button " type="button" [routerLink]="'/login'">Voltar</button>
-        <button class="ui button primary" type="submit" >Cadastrar</button>
+        <button class="ui button primary" type="submit" (click)="submitForm()" [disabled]="registerForm.invalid" >Cadastrar</button>
     </form>
   
     
