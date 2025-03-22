@@ -30,14 +30,14 @@ export class CadastroComponent implements OnInit {
     name: ['', [Validators.required, Validators.minLength(2)]],
     matricula: ['', ],
     birthDay:['',],
-    cpf: ['', [Validators.required]],
+    cpf: ['', [Validators.required, Validators.minLength(11)]],
     rg: [''],
     vinculo: ['', ],
     lotacao: ['', ],
     endereco: ['', ],
     email: ['', ],
     phone: ['',],
-    password: ['',[Validators.required]],
+    password: ['',[Validators.required, Validators.minLength(6)]],
     confirmPassowrd: ['', [Validators.required]],
     photo: new FormControl<File | null>(null)
   })

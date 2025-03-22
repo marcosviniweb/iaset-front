@@ -4,7 +4,7 @@
     </div>
    
 
-   @if(formType.value == 'funcionario') {<form class="ui form" [formGroup]="registerForm" (submit)="submitForm()">
+ <form class="ui form" [formGroup]="registerForm" (submit)="submitForm()">
         <div class="container-photo">
             <label>Foto de Perfil</label>
             <div class="photo">
@@ -55,9 +55,14 @@
                     <div class="ui label">CPF:</div>
                     <input type="text" formControlName="cpf" placeholder="CPF" CpfCnpjMask maxlength="14">
                 </div>
+                <span class="error-msg">
                 @if(registerForm.get('cpf')?.hasError('required') && registerForm.get('cpf')?.touched){
-                    <span class="error-msg">* Campo Obrigatório *</span>
-                    }
+                    * Campo Obrigatório *
+                }
+                @else if(registerForm.get('cpf')?.hasError('minlength') && registerForm.get('cpf')?.dirty){
+                     CPF invalido *
+                }
+                </span>    
             </div>
             <div class="five wide  field">
                 <div class="ui labeled input">
@@ -124,9 +129,13 @@
                         
                       </button>
                 </div>
+                <span class="error-msg">
                 @if(registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched){
-                    <span class="error-msg">* Campo Obrigatório *</span>
+                    * Campo Obrigatório *
+                    } @else if(registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.dirty){
+                       Deve conter pelo menos 6 caracters
                     }
+                </span>
             </div>
             <div class=" field">
                 <div class="ui labeled action input">
@@ -154,154 +163,7 @@
         <button class="ui button " type="button" [routerLink]="'/login'">Voltar</button>
         <button class="ui button primary" type="submit" >Cadastrar</button>
     </form>
-    }
-    @else{
-        <form class="ui form" [formGroup]="registerForm" (submit)="submitForm()">
-            <div class="container-photo">
-                <label>Foto de Perfil</label>
-                <div class="photo">
-                    <input #photo type="file" (change)="imgFile($event)">
-                    <img [src]="this.profileImg ? this.profileImg:'img/user-profile.png' " alt="">
-                    <div class="select-picture" (click)="photo.click()">
-                        <i class="camera icon"></i>
-                        <mat-icon>touch_app</mat-icon>
-                        <p>Selecione uma Foto</p>
-                    </div>
-    
-                </div>
-                @if (this.profileImg) {
-                <span>Toque novamente para alterar</span>
-                }
-    
-    
-            </div>
-            <div class="two fields">
-                <div class="field">
-                    <div class="ui labeled input">
-                        <div class="ui label">*Nome:</div>
-                        <input type="text" formControlName="name" placeholder="Nome">
-                    </div>
-                    @if(registerForm.get('name')?.hasError('required') && registerForm.get('name')?.touched){
-                    <span class="error-msg">* Campo Obrigatório *</span>
-                    }
-    
-                </div>
-    
-    
-                <div class="field">
-                    <div class="ui labeled input">
-                        <div class="ui label">*Email:</div>
-                        <input #email type="email" formControlName="email" placeholder="Email">
-                    </div>
-                    @if(registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched){
-                    <span class="error-msg"> * Campo Obrigatório *</span>
-                    } @else if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.dirty) {
-                    <span class="error-msg"> Formato de E-mail invalido ! </span>
-                    }
-                </div>
-    
-    
-            </div>
-            <div class="ui inverted divider"></div>
-            <div class="three fields">
-                <div class="field">
-                    <div class="ui labeled input">
-                        <div class="ui label">CPF:</div>
-                        <input type="text" formControlName="cpf" placeholder="CPF" CpfCnpjMask maxlength="14">
-                    </div>
-                </div>
-                <div class="five wide  field">
-                    <div class="ui labeled input">
-                        <div class="ui label">RG:</div>
-                        <input type="text" formControlName="rg" placeholder="RG" maxlength="10">
-                    </div>
-                </div>
-                <div class="eight wide field">
-                    <div class="ui labeled input">
-                        <div class="ui label">Data de Nascimento:</div>
-                        <input type="date" placeholder="DD/MM/YYYY" formControlName="birthDay">
-                    </div>
-                </div>
-            </div>
-    
-            <div class="three fields">
-                <div class="six wide field">
-                    <div class="ui labeled input">
-                        <div class="ui label">Matrícula:</div>
-                        <input type="text" formControlName="matricula" placeholder="Matrícula (Opcional)">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="ui labeled input">
-                        <div class="ui label">Vínculo:</div>
-                        <input type="text" formControlName="vinculo" placeholder="Vínculo">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="ui labeled input">
-                        <div class="ui label">Lotação:</div>
-                        <input type="text" formControlName="lotacao" placeholder="Lotação">
-                    </div>
-                </div>
-            </div>
-    
-            <div class="two fields">
-                <div class="field">
-                    <div class="ui labeled input">
-                        <div class="ui label">Endereço:</div>
-                        <input type="text" formControlName="endereco" placeholder="Endereço">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="ui labeled input">
-                        <div class="ui label">Telefone:</div>
-                        <input type="text" formControlName="phone" placeholder="(DDD) 00000-0000" PhoneMask>
-                    </div>
-                </div>
-    
-            </div>
-            <div class="ui inverted divider"></div>
-            <div class="two fields">
-                <div class="field">
-                    <div class="ui labeled action input">
-                        <div class="ui label">Senha:</div>
-                        <input #pass type="password" formControlName="password" placeholder="Senha">
-                        <button class="ui icon button" (click)="pass.type === 'password'? pass.type = 'text':pass.type = 'password'">
-                            @if(pass.type === 'password'){
-                                <i  class="eye  icon"></i>
-                            }@else{
-                                <i class="eye slash icon"></i>
-                            }
-                            
-                          </button>
-                    </div>
-                </div>
-                <div class=" field">
-                    <div class="ui labeled action input">
-                        <div class="ui label">Confirme a senha:</div>
-                        <input #confirm type="password" formControlName="confirmPassowrd" placeholder="Digite sua senha novamente">                    
-                        <button class="ui icon button" (click)="confirm.type === 'password'? confirm.type = 'text':confirm.type = 'password'">
-                            @if(confirm.type === 'password'){
-                                <i  class="eye  icon"></i>
-                            }@else{
-                                <i class="eye slash icon"></i>
-                            }
-                          </button>
-                    </div>
-                    
-                </div>
-    
-            </div>
-    
-            <div class="ui inverted divider"></div>
-            <div class="alert">
-                <span>*Verifique se suas informações estão corretas antes de enviar o formulario !*</span>
-            </div>
-            <button class="ui button " type="button" [routerLink]="'/login'">Voltar</button>
-            <button class="ui button primary" type="submit" >Cadastrar</button>
-        </form>
-
-    }
+  
     
 </section>
 
