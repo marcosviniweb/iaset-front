@@ -120,7 +120,7 @@
                 <div class="ui labeled action input">
                     <div class="ui label">Senha:</div>
                     <input #pass type="password" formControlName="password" placeholder="Senha">
-                    <button class="ui icon button" (click)="pass.type === 'password'? pass.type = 'text':pass.type = 'password'">
+                    <button class="ui icon button" type="button" (click)="pass.type === 'password'? pass.type = 'text':pass.type = 'password'">
                         @if(pass.type === 'password'){
                             <i  class="eye  icon"></i>
                         }@else{
@@ -141,7 +141,7 @@
                 <div class="ui labeled action input">
                     <div class="ui label">Confirme a senha:</div>
                     <input #confirm type="password" formControlName="confirmPassowrd" placeholder="Digite sua senha novamente">                    
-                    <button class="ui icon button" (click)="confirm.type === 'password'? confirm.type = 'text':confirm.type = 'password'">
+                    <button class="ui icon button" type="button" (click)="confirm.type === 'password'? confirm.type = 'text':confirm.type = 'password'">
                         @if(confirm.type === 'password'){
                             <i  class="eye  icon"></i>
                         }@else{
