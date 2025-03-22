@@ -28,19 +28,34 @@ export class LoginComponent {
   });
 
   login() {
+    if (!this.authForm.valid) {
+      this.authForm.markAllAsTouched();
+      return;
+    }
+    
     this.loading = true;
-    const authData = this.authForm.value as { email: string; password: string };
+    this.errorMsg = null;
+    
+    const authData = this.authForm.value;
 
     this.authService
-      .auth(authData)
+      .auth(authData as { emailOrCpf: string; pass: string })
       .then((response) => {
-        console.log(response)
+        console.log('Login bem-sucedido:', response);
         this.loading = false;
       })
       .catch((error: HttpErrorResponse) => {
-        this.showError(error.error.message);
+        console.error('Erro de login:', error);
         this.loading = false;
-        throw error;
+        
+        if (error.status === 403) {
+          this.errorMsg = {
+            input: 'user',
+            message: 'Seu acesso ainda não foi aprovado. Aguarde a aprovação.'
+          };
+        } else {
+          this.showError(error.error?.message || 'Erro ao fazer login');
+        }
       });
   }
 
@@ -48,10 +63,15 @@ export class LoginComponent {
     const error: { [key: string]: any } = {
       'Usuário não encontrado.': {
         input: 'user',
-        message: 'Usuário não encontrado !',
+        message: 'Usuário não encontrado!',
       },
-      'Senha incorreta.': { input: 'pass', message: 'Senha incorreta !' },
+      'Senha incorreta.': { input: 'pass', message: 'Senha incorreta!' },
+      'Seu acesso ainda não foi aprovado. Aguarde a aprovação.': {
+        input: 'user',
+        message: 'Seu acesso ainda não foi aprovado. Aguarde a aprovação.'
+      }
     };
-    this.errorMsg = error[errorMsg];
+    
+    this.errorMsg = error[errorMsg] || { input: 'user', message: errorMsg };
   }
 }

@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, inject, OnInit, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl, FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CpfCnpjMaskDirective } from '../../shared/directives/cpfMask.directive';
 import { PhoneMaskDirective } from '../../shared/directives/phoneMask.directive';
 import { CoreService } from '../../core/services/core.service';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -22,10 +22,12 @@ export class CadastroComponent implements OnInit {
 
   private dataService = inject(CoreService)
   readonly dialog = inject(MatDialog);
+  private router = inject(Router);
   fb = inject(NonNullableFormBuilder)
 
   formType = this.fb.control('funcionario')
   isSubmitting = false; 
+  dialogRef: MatDialogRef<any> | null = null;
 
   registerForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -104,7 +106,6 @@ export class CadastroComponent implements OnInit {
       formData.append('cpf', cpfLimpo);
       
       formData.append('password', this.registerForm.get('password')?.value || '');
-      formData.append('firstAccess', 'false'); // Definir firstAccess como false conforme regra de negócio
       
       // Processar campos opcionais
       const optionalFields = ['matricula', 'birthDay', 'rg', 'vinculo', 'lotacao', 'endereco', 'email', 'phone'];
@@ -144,7 +145,14 @@ export class CadastroComponent implements OnInit {
       .subscribe({
         next:(response)=> {
           console.log('Resposta do servidor:', response);
-          this.openDialog(this.templateSucess);
+          
+          // Após o cadastro bem-sucedido, atualizar o firstAccess para false
+          if (response && response.id) {
+            this.updateFirstAccess(response.id);
+          } else {
+            // Se não tiver ID, apenas mostrar o diálogo de sucesso
+            this.openSuccessDialog();
+          }
         },
         error:(error:HttpErrorResponse)=>{
           console.error('Erro completo:', error);
@@ -170,12 +178,55 @@ export class CadastroComponent implements OnInit {
     }
   }
   
+  // Método para atualizar o firstAccess para false usando o endpoint específico
+  updateFirstAccess(userId: number) {
+    console.log('Atualizando firstAccess para false para usuário:', userId);
+    
+    this.dataService.updateFirstAccess(userId, false)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          // Garantir que o diálogo seja aberto mesmo se houver erro na atualização
+          if (!this.dialogRef) {
+            this.openSuccessDialog();
+          }
+        })
+      )
+      .subscribe({
+        next: (response: any) => {
+          console.log('FirstAccess atualizado com sucesso:', response);
+          this.openSuccessDialog();
+        },
+        error: (error: HttpErrorResponse) => {
+          console.error('Erro ao atualizar firstAccess:', error);
+          // Ainda mostramos o diálogo de sucesso porque o cadastro em si foi bem-sucedido
+          this.openSuccessDialog();
+        }
+      });
+  }
+
+  openSuccessDialog() {
+    // Abrir diálogo de sucesso
+    this.dialogRef = this.dialog.open(this.templateSucess);
+    
+    // Adicionar um listener para o fechamento do diálogo
+    this.dialogRef.afterClosed().subscribe(() => {
+      console.log('Diálogo fechado, redirecionando para login');
+      this.router.navigate(['/login']);
+    });
+  }
+  
   openDialog(templete:TemplateRef<HTMLElement>){
-    this.dialog.open(templete);
+    this.dialogRef = this.dialog.open(templete);
   }
 
   closeDialog(){
     this.dialog.closeAll();
+    
+    // Se o diálogo de sucesso foi fechado, redirecionar para login
+    if (this.dialogRef && this.templateSucess) {
+      this.router.navigate(['/login']);
+    }
   }
   
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {

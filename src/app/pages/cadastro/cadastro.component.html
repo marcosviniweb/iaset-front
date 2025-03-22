@@ -4,7 +4,7 @@
     </div>
    
 
- <form class="ui form" [formGroup]="registerForm" (submit)="submitForm()">
+ <form class="ui form" [formGroup]="registerForm">
         <div class="container-photo">
             <label>Foto de Perfil</label>
             <div class="photo">
@@ -165,7 +165,7 @@
             <span>*Verifique se suas informações estão corretas antes de enviar o formulario !*</span>
         </div>
         <button class="ui button " type="button" [routerLink]="'/login'">Voltar</button>
-        <button class="ui button primary" type="submit" [disabled]="registerForm.invalid" >Cadastrar</button>
+        <button class="ui button primary" type="button" [disabled]="registerForm.invalid" (click)="submitForm()">Cadastrar</button>
     </form>
   
     
@@ -183,10 +183,10 @@
     </div>
 
     <mat-dialog-content>
-        Aguarde a aprovação do seu cadastro
+        <b>Aguarde a aprovação do seu cadastro</b>
     </mat-dialog-content>
     <mat-dialog-actions >
-        <button class="ui button primary" type="button" (click)="closeDialog()">OK</button>
+        <button class="ui button primary fluid" type="button" (click)="closeDialog()">OK</button>
     </mat-dialog-actions>
 </ng-template>
 

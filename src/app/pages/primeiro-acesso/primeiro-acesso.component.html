@@ -1,50 +1,93 @@
 <div class="content">
-
     <div class="header">
-        <img src="img/white-logo.png" alt="">
+        <img src="img/white-logo.png" alt="Logo IASET">
     </div>
     <div class="alert">
         <h3>Este é o seu primeiro acesso. <i class="unlock icon"></i></h3>
         <p>Recomendamos que você altere a senha para uma de sua confiança.</p>
     </div>
+    
+    @if (errorMessage) {
+    <div class="ui negative message">
+        <i class="close icon"></i>
+        <div class="header">Erro</div>
+        <p>{{errorMessage}}</p>
+    </div>
+    }
+    
     <form class="ui form dialog-form" [formGroup]="passwordForm">
+        <div class="field">
+            <label>Senha Atual</label>
+            <div class="ui labeled action input">
+                <div class="ui label"><i class="lock icon"></i></div>
+                <input #oldPass type="password" formControlName="oldPassword" placeholder="Senha atual" readonly>
+                <button class="ui icon button" type="button" (click)="oldPass.type === 'password'? oldPass.type = 'text':oldPass.type = 'password'">
+                    @if(oldPass.type === 'password'){
+                        <i class="eye icon"></i>
+                    }@else{
+                        <i class="eye slash icon"></i>
+                    }
+                </button>
+            </div>
+            <small>Esta é a senha padrão fornecida inicialmente (123456)</small>
+        </div>
 
         <div class="field">
+            <label>Nova Senha *</label>
             <div class="ui labeled action input">
-                <div class="ui label">* Senha:</div>
-                <input #pass type="password" formControlName="newPassword" placeholder="Senha">
-                <button class="ui icon button" (click)="pass.type === 'password'? pass.type = 'text':pass.type = 'password'">
+                <div class="ui label"><i class="key icon"></i></div>
+                <input #pass type="password" formControlName="newPassword" placeholder="Nova senha">
+                <button class="ui icon button" type="button" (click)="pass.type === 'password'? pass.type = 'text':pass.type = 'password'">
                     @if(pass.type === 'password'){
-                        <i  class="eye  icon"></i>
+                        <i class="eye icon"></i>
                     }@else{
                         <i class="eye slash icon"></i>
                     }
-                    
-                  </button>
+                </button>
             </div>
-           
-        </div>
-        <div class="field">
-            <div class="ui labeled action input">
-                <div class="ui label">* Confirme:</div>
-                <input #confirm type="password" formControlName="confirmPassword" placeholder="Digite novamente">
-                <button class="ui icon button" (click)="confirm.type === 'password'? confirm.type = 'text':confirm.type = 'password'">
-                    @if(confirm.type === 'password'){
-                        <i  class="eye  icon"></i>
-                    }@else{
-                        <i class="eye slash icon"></i>
-                    }
-                    
-                  </button>
-            </div>
-            @if(passwordForm.hasError('mismatch')){
-                <span class="error-msg"> *As senhas devem ser iguais *</span>
+            @if(passwordForm.get('newPassword')?.hasError('required') && passwordForm.get('newPassword')?.touched){
+                <div class="ui pointing red basic label">Campo obrigatório</div>
+            } @else if(passwordForm.get('newPassword')?.hasError('minlength') && passwordForm.get('newPassword')?.touched){
+                <div class="ui pointing red basic label">A senha deve ter no mínimo 6 caracteres</div>
             }
         </div>
-       
+        
+        <div class="field">
+            <label>Confirme a Nova Senha *</label>
+            <div class="ui labeled action input">
+                <div class="ui label"><i class="key icon"></i></div>
+                <input #confirm type="password" formControlName="confirmPassword" placeholder="Confirme a nova senha">
+                <button class="ui icon button" type="button" (click)="confirm.type === 'password'? confirm.type = 'text':confirm.type = 'password'">
+                    @if(confirm.type === 'password'){
+                        <i class="eye icon"></i>
+                    }@else{
+                        <i class="eye slash icon"></i>
+                    }
+                </button>
+            </div>
+            @if(passwordForm.get('confirmPassword')?.hasError('required') && passwordForm.get('confirmPassword')?.touched){
+                <div class="ui pointing red basic label">Campo obrigatório</div>
+            } @else if(passwordForm.hasError('mismatch') && passwordForm.get('confirmPassword')?.touched){
+                <div class="ui pointing red basic label">As senhas devem ser iguais</div>
+            }
+        </div>
     </form>
+    
     <div class="actions">
-        <button class="ui button primary" type="button" [disabled]="passwordForm.invalid" (click)="submit()" >Confirmar</button>
-        <button class="ui button" type="button" (click)="logOff()" >Voltar</button>
+        @if (isSubmitting) {
+            <div class="ui segment blue loadered">
+                <div class="ui active inverted dimmer">
+                    <div class="ui tiny text loader">Processando...</div>
+                </div>
+                <p></p>
+            </div>
+        } @else {
+            <button class="ui button primary fluid large" type="button" [disabled]="passwordForm.invalid" (click)="submit()">
+                Confirmar e Prosseguir
+            </button>
+            <button class="ui button fluid" type="button" (click)="logOff()">
+                Voltar para o Login
+            </button>
+        }
     </div>
 </div>

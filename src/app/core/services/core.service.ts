@@ -46,6 +46,34 @@ export class CoreService {
         })
       );
   }
+  
+  // Método para atualizar o status de primeiro acesso do usuário
+  updateFirstAccess(userId: number, firstAccess: boolean) {
+    console.log(`Atualizando firstAccess para ${firstAccess} para usuário ID ${userId}`);
+    
+    const url = `${this.apiUrl.dataUser}/${userId}/first-access`;
+    const body = { firstAccess };
+    
+    // Cria headers apropriados para a requisição
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    
+    console.log('URL da requisição:', url);
+    console.log('Dados enviados:', body);
+    
+    return this.httpClient.put(url, body, { headers })
+      .pipe(
+        tap(response => console.log('Resposta da atualização de firstAccess:', response)),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Erro ao atualizar firstAccess:', error);
+          console.error('Status:', error.status);
+          console.error('Mensagem:', error.error);
+          return throwError(() => error);
+        })
+      );
+  }
+  
   setDependent(userId:number, body:FormData ){
     return this.httpClient.post(this.apiUrl.dataUser+`/${userId}/dependents`, body)
     .pipe(tap(()=> this.getDependents(this.userData.id, 'newRequest')))
