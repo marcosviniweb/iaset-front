@@ -42,7 +42,7 @@
                     <input #email type="email" formControlName="email" placeholder="Email">
                 </div>
                 @if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.dirty) {
-                <span class="error-msg"> Formato de E-mail invalido ! </span>
+                <span class="error-msg">Formato de E-mail inválido!</span>
                 }
             </div>
 
@@ -165,7 +165,7 @@
             <span>*Verifique se suas informações estão corretas antes de enviar o formulario !*</span>
         </div>
         <button class="ui button " type="button" [routerLink]="'/login'">Voltar</button>
-        <button class="ui button primary" type="submit" (click)="submitForm()" [disabled]="registerForm.invalid" >Cadastrar</button>
+        <button class="ui button primary" type="submit" [disabled]="registerForm.invalid" >Cadastrar</button>
     </form>
   
     
@@ -201,7 +201,8 @@
     </div>
 
     <mat-dialog-content>
-        cod:{{statusError}}
+        <p>{{errorMessage}}</p>
+        <p>Código: {{statusError}}</p>
     </mat-dialog-content>
     <mat-dialog-actions class="">
         <button class="ui button primary" type="button" (click)="closeDialog()">OK</button>

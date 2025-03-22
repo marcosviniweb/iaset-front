@@ -1,11 +1,9 @@
 import { Dependent } from './../models/dependents.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { APIUrl } from '../env/apiUrl';
 import { UserData } from '../models/userData.model';
-import { map, Observable, shareReplay, switchMap, tap } from 'rxjs';
-
-
+import { catchError, map, Observable, shareReplay, switchMap, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -19,11 +17,34 @@ export class CoreService {
   dependentById$!:Observable<Dependent>
   userData$!:Observable<UserData>
 
-  userData = JSON.parse(localStorage.getItem('userData') as string) as UserData
+  userData = JSON.parse(localStorage.getItem('userData') as string || '{}') as UserData
   
   setUser(body:FormData){
-    return this.httpClient.post(this.apiUrl.dataUser, body)
-    .pipe(tap(()=> this.getUserData(this.userData.id)))
+    console.log('URL da API:', this.apiUrl.dataUser);
+    
+    // Exibir os dados que estão sendo enviados
+    console.log('Enviando dados para o backend:');
+    body.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
+    
+    // Desabilitar cache para evitar problemas de duplicação
+    const headers = new HttpHeaders({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    
+    return this.httpClient.post<{id: number, token: string}>(this.apiUrl.dataUser, body, { headers })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          console.error('Erro no cadastro:', error);
+          console.error('Detalhes do erro:', error.error);
+          console.error('Status:', error.status);
+          console.error('Status text:', error.statusText);
+          return throwError(() => error);
+        })
+      );
   }
   setDependent(userId:number, body:FormData ){
     return this.httpClient.post(this.apiUrl.dataUser+`/${userId}/dependents`, body)
