@@ -17,7 +17,10 @@ export class CoreService {
   dependentById$!:Observable<Dependent>
   userData$!:Observable<UserData>
 
-  userData = JSON.parse(localStorage.getItem('userData') as string || '{}') as UserData
+  // Carregar dados do localStorage apenas quando necessário
+  get userData() {
+    return JSON.parse(localStorage.getItem('userData') as string || '{}') as UserData
+  }
   
   setUser(body:FormData){
     console.log('URL da API:', this.apiUrl.dataUser);
@@ -90,15 +93,53 @@ export class CoreService {
 
   getUserData(userId:number, newRequest?:'newRequest'){
     if (!this.userData$ || newRequest) {
-      console.log('new Request for user data')
+      console.log('Iniciando nova requisição para dados do usuário', userId)
       this.userData$ = this.httpClient.get<UserData>(this.apiUrl.dataUser+`/${userId}`)
-        .pipe(shareReplay());
+        .pipe(
+          tap(userData => {
+            console.log('Dados do usuário recebidos:', userId)
+            // Atualizar o localStorage com os dados mais recentes
+            localStorage.setItem('userData', JSON.stringify(userData))
+          }),
+          shareReplay(1),
+          catchError((error: HttpErrorResponse) => {
+            console.error('Erro ao obter dados do usuário:', error)
+            return throwError(() => error)
+          })
+        );
     }
     return this.userData$;
   }
 
   updateUserData(userId:number, body:FormData){
     return this.httpClient.put(this.apiUrl.dataUser+`/${userId}`, body)
+      .pipe(
+        tap(response => {
+          console.log('Dados atualizados com sucesso')
+          // Limpar o cache após atualização
+          this.userData$ = null!
+          // Atualizar o localStorage com os dados mais recentes
+          localStorage.setItem('userData', JSON.stringify(response))
+        }),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Erro ao atualizar dados do usuário:', error)
+          
+          // Tratar erro de email duplicado
+          if (error.status === 409 || 
+              (error.error && error.error.message && 
+               error.error.message.includes('esse CPF, matrícula ou e-mail'))) {
+            return throwError(() => ({
+              ...error,
+              error: {
+                ...error.error,
+                message: 'Este email já está em uso por outro usuário.'
+              }
+            }))
+          }
+          
+          return throwError(() => error)
+        })
+      )
   }
 
   updateDependent(userId:number, depId:number, body:FormData){
@@ -127,6 +168,22 @@ export class CoreService {
   deleteDependent(userId:number, dependentId:number){
     return this.httpClient.delete<Dependent>(this.apiUrl.dataUser+`/${userId}/dependents/${dependentId}`)
     .pipe(tap(()=> this.getDependents(this.userData.id, 'newRequest')))
+  }
+
+  // Método para limpar o cache das requisições
+  clearCache(): void {
+    this.userData$ = null!;
+    this.dependent$ = null!;
+    console.log('Cache de requisições limpo');
+  }
+
+  // Método para fazer logout completo
+  logout(): void {
+    // Limpa o cache primeiro
+    this.clearCache();
+    // Remove dados do localStorage
+    localStorage.removeItem('userData');
+    localStorage.removeItem('token');
   }
 
 }

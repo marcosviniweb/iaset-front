@@ -13,15 +13,19 @@ import { CpfMaskPipe } from '../../shared/pipes/cpf-mask.pipe';
 export class UserCardComponent implements OnInit {
   cardData = input<CardData>()
   cardDataUser:CardData | undefined  
-  userData = JSON.parse(localStorage.getItem('userData') as string)
+  
+  // Usar getter para garantir dados mais atualizados
+  get userData() {
+    return JSON.parse(localStorage.getItem('userData') as string || '{}')
+  }
+  
   protected apiUrlImg = UrlImg
+  
   ngOnInit(): void {
     this.setCardData()
-
   }
 
   setCardData(){
     this.cardDataUser = this.cardData()
-
   }
 }

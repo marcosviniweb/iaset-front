@@ -45,6 +45,8 @@
                     <span class="error-msg"  > Campo Obrigatório</span>
                 } @else if (updateForm.get('email')?.hasError('email') && updateForm.get('email')?.dirty) {
                     <span class="error-msg"  > Formato de E-mail invalido ! </span>
+                } @else if (updateMessage && updateMessage.status === 'error' && updateMessage.message.includes('email já está em uso')) {
+                    <span class="error-msg">Este email já está em uso por outro usuário</span>
                 }
             </div>
            
@@ -111,7 +113,9 @@
         @if (updateMessage) {
             <span class="update-message" [ngClass]="updateMessage.status">
                 {{updateMessage.message}}
-                
+                <button class="ui mini icon button" *ngIf="updateMessage.status === 'error'" (click)="updateMessage = {status:'', message:''}">
+                    <i class="close icon"></i>
+                </button>
             </span>
         }
    

@@ -53,35 +53,59 @@ export class PerfilComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.passwordForm.setValidators(this.passwordMatchValidator)
     this.getUserData()
-    this.updateForm.controls.birthDay.valueChanges.subscribe((value)=>{
-      const formatDate = this.formatarData(value)
-      this.updateForm.controls.birthDay.setValue(formatDate,{emitEvent:false})
+    
+    // Monitor changes to birthDay and format appropriately
+    // But don't add the listener again if we're reloading data
+    this.updateForm.get('birthDay')?.valueChanges.subscribe((value) => {
+      if (value) {
+        const formatDate = this.formatarData(value)
+        this.updateForm.get('birthDay')?.setValue(formatDate, {emitEvent: false})
+      }
     })
   }
 
   getUserData(){
-    if(this.userData){
-      this.updateForm.patchValue(this.userData as any)
+    // Primeiro, garantir que estamos usando o ID correto do usuário atualmente logado
+    const currentUserData = JSON.parse(localStorage.getItem('userData') as string)
+    
+    if (currentUserData && currentUserData.id) {
+      // Atualizar o userData com os dados atuais do localStorage
+      this.userData = currentUserData
+      
+      // Forçar uma nova requisição para garantir dados atualizados
+      this.dataService.getUserData(currentUserData.id, 'newRequest')
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next:(userData) => {
+          this.updateData(userData)
+        },
+        error:(error) => {
+          console.error('Erro ao carregar dados do usuário:', error)
+        }
+      })
     }
-    this.dataService.getUserData(this.userData!.id)
-    .pipe(
-      takeUntil(this.destroy$)
-    )
-    .subscribe({
-      next:(userData)=>{
-        this.updateData(userData)
-      },
-      error:(error)=>{
-        console.log(error)
-      }
-    })
-
   }
 
-  updateData(userData:UserData){
+  updateData(userData: UserData){
+    // Atualizar o localStorage com os novos dados
     localStorage.setItem('userData', JSON.stringify(userData))
+    
+    // Atualizar a variável local
     this.userData = userData
-    this.updateForm.patchValue(userData as any)
+    
+    // Aplicar os novos valores ao formulário
+    // Formatamos a data para garantir que seja exibida corretamente
+    if (userData.birthDay) {
+      const formattedBirthDay = this.formatarData(userData.birthDay)
+      this.updateForm.patchValue({
+        ...userData as any,
+        birthDay: formattedBirthDay
+      })
+    } else {
+      this.updateForm.patchValue(userData as any)
+    }
   }
 
   imgFile(event: Event) {
@@ -111,23 +135,43 @@ export class PerfilComponent implements OnInit, OnDestroy {
   formatarData(dataISO: string): string {
     if (!dataISO) return '';
     
-    const data = new Date(dataISO);
-  
-    // Obtém os componentes da data
-    const ano = data.getUTCFullYear();
-    const mes = String(data.getUTCMonth() + 1).padStart(2, '0');
-    const dia = String(data.getUTCDate()).padStart(2, '0');
-    
-    // Retorna no formato yyyy-MM-dd
-    return `${ano}-${mes}-${dia}`;
-  };
+    try {
+      const data = new Date(dataISO);
+      
+      // Verifica se a data é válida
+      if (isNaN(data.getTime())) {
+        console.error('Data inválida:', dataISO);
+        return '';
+      }
+      
+      // Obtém os componentes da data
+      const ano = data.getUTCFullYear();
+      const mes = String(data.getUTCMonth() + 1).padStart(2, '0');
+      const dia = String(data.getUTCDate()).padStart(2, '0');
+      
+      // Retorna no formato yyyy-MM-dd
+      return `${ano}-${mes}-${dia}`;
+    } catch (error) {
+      console.error('Erro ao formatar data:', error);
+      return '';
+    }
+  }
 
   editUserProfile(){
-    const formData = new FormData();
+    if (this.updateForm.invalid) {
+      // Marca todos os campos como tocados para mostrar erros de validação
       Object.keys(this.updateForm.controls).forEach(key => {
-        key !== 'confirmPassowrd' ?
-          formData.append(key, this.updateForm.get(key)?.value) : null
+        this.updateForm.get(key)?.markAsTouched();
       });
+      return;
+    }
+    
+    const formData = new FormData();
+    Object.keys(this.updateForm.controls).forEach(key => {
+      key !== 'confirmPassowrd' ?
+        formData.append(key, this.updateForm.get(key)?.value) : null
+    });
+    
     this.dataService.updateUserData(this.userData.id, formData)
     .subscribe({
       next:(response)=> {
@@ -140,8 +184,8 @@ export class PerfilComponent implements OnInit, OnDestroy {
         this.dialog.closeAll()
         this.updateMessage = {
           status:'error', 
-          message:errorMessage? errorMessage+'cod:'+error.status:'Ocorreu um erro durante a atualização, tente novamente. cod:'+error.status}
-        throw error
+          message:errorMessage? errorMessage+' cod:'+error.status:'Ocorreu um erro durante a atualização, tente novamente. cod:'+error.status}
+        console.error('Erro ao atualizar perfil:', error)
       }
     })
   }
