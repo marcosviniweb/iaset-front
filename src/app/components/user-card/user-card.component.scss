@@ -101,6 +101,14 @@
                     
                 }
             }
+            .dep{
+                display: flex;
+                align-items: center;
+                height: 100%;
+                h2{
+                    mix-blend-mode: multiply;
+                }
+            }
 
         }
        

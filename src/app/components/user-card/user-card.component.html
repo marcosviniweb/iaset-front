@@ -3,7 +3,11 @@
     <div class="card-header">
         <div class="user-name">
             <h1>{{cardDataUser?.name}}</h1>
-            <p>NOME DO ASSOCIADO</p>
+            @if (!!cardDataUser?.user) {
+                <p>NOME DO DEPENDENTE</p>
+            }@else {
+                <p>NOME DO ASSOCIADO</p>
+            }
         </div>
         
         <div class="qr-code">
@@ -11,7 +15,7 @@
         </div>
     </div>
     <div class="card-body">
-        <div class="code-photo">
+        <div class="code-photo" >
             @if(cardDataUser?.matricula){
                 <div class="registration-code" >
                     <h2>{{cardDataUser?.matricula}}</h2>
@@ -22,6 +26,11 @@
                 <div class="photo">
                     <img [src]="apiUrlImg+cardDataUser?.photo" alt="Foto do Associado" />
                 </div>
+            }@else {
+                <div class="dep">
+                    <h2>DEPENDENTE</h2>
+                </div>
+             
             }
         </div>
         <div class="info">

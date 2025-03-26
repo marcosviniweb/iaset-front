@@ -26,6 +26,7 @@ export const routes: Routes = [
     {path:'primeiro-acesso', component:PrimeiroAcessoComponent},
     {path:'login', component:LoginComponent, canActivate:[authGuard]},
     {path:'cadastro', loadComponent:()=> import('./pages/cadastro/cadastro.component').then((c)=> c.CadastroComponent), canActivate:[authGuard]},
+    {path:'**', redirectTo:'/'},
 ];
 
 export class AppRoutingModule {

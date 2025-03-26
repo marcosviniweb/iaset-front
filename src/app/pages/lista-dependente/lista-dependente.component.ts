@@ -2,7 +2,6 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CoreService } from '../../core/services/core.service';
 import { firstValueFrom, map, Observable, shareReplay, Subject, takeUntil, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { CardData } from '../../core/models/cardData.model';
 import { Dependent } from '../../core/models/dependents.model';
 import { RouterModule } from '@angular/router';
 import { UserData } from '../../core/models/userData.model';
@@ -21,18 +20,22 @@ export class ListaDependenteComponent implements  OnDestroy {
   destroy$ = new Subject();
 
   listDependents$: Observable<Dependent[]> = this.dataService
-    .getDependents(this.userData.id)
+    .getDependents(this.userData.id, 'newRequest')
     .pipe(
       takeUntil(this.destroy$),
+      tap((dep=> console.log(dep)))
     )
 
-  deleteDependent(dependentId:number){
-    firstValueFrom(this.dataService.deleteDependent(this.userData.id, dependentId))
+  deleteDependent(dependentId:number, dependentName:string){
+    if(confirm(`Deseje realmente apagar o dependente: ${dependentName} ? `)){
+      firstValueFrom(this.dataService.deleteDependent(this.userData.id, dependentId))
     .then((sucess)=> {
       console.log(sucess)})
     .catch(error=>{
       throw error
     })
+    }
+    
   }
 
   ngOnDestroy(): void {

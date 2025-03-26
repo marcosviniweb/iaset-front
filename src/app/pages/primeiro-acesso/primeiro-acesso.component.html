@@ -16,21 +16,7 @@
     }
     
     <form class="ui form dialog-form" [formGroup]="passwordForm">
-        <div class="field">
-            <label>Senha Atual</label>
-            <div class="ui labeled action input">
-                <div class="ui label"><i class="lock icon"></i></div>
-                <input #oldPass type="password" formControlName="oldPassword" placeholder="Senha atual" readonly>
-                <button class="ui icon button" type="button" (click)="oldPass.type === 'password'? oldPass.type = 'text':oldPass.type = 'password'">
-                    @if(oldPass.type === 'password'){
-                        <i class="eye icon"></i>
-                    }@else{
-                        <i class="eye slash icon"></i>
-                    }
-                </button>
-            </div>
-            <small>Esta é a senha padrão fornecida inicialmente (123456)</small>
-        </div>
+       
 
         <div class="field">
             <label>Nova Senha *</label>
@@ -82,11 +68,11 @@
                 <p></p>
             </div>
         } @else {
-            <button class="ui button primary fluid large" type="button" [disabled]="passwordForm.invalid" (click)="submit()">
-                Confirmar e Prosseguir
-            </button>
             <button class="ui button fluid" type="button" (click)="logOff()">
                 Voltar para o Login
+            </button>
+            <button class="ui button primary fluid large" type="button" [disabled]="passwordForm.invalid" (click)="submit()">
+                Confirmar e Prosseguir
             </button>
         }
     </div>

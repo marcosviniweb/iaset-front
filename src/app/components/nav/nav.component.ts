@@ -12,6 +12,6 @@ export class NavComponent {
   private authService = inject(AuthService)
 
   logOff(){
-    this.authService.logOff()
+    this.authService.logout()
   }
 }
