@@ -30,6 +30,8 @@ export class ListaDependenteComponent implements  OnDestroy {
     if(confirm(`Deseje realmente apagar o dependente: ${dependentName} ? `)){
       firstValueFrom(this.dataService.deleteDependent(this.userData.id, dependentId))
     .then((sucess)=> {
+     this.listDependents$ = this.dataService
+    .getDependents(this.userData.id, 'newRequest')
       console.log(sucess)})
     .catch(error=>{
       throw error

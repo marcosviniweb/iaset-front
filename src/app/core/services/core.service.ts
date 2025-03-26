@@ -79,7 +79,7 @@ export class CoreService {
   getDependents(userId:number, newRequest?:'newRequest'){
     if(!this.dependent$ || newRequest){
       console.log('new Request')
-      this.dependent$ = this.httpClient.get<Dependent[]>(this.apiUrl.dataUser+`/${userId}/dependents?filterByStatus=true `)
+      this.dependent$ = this.httpClient.get<Dependent[]>(this.apiUrl.dataUser+`/${userId}/dependents `)
       .pipe(shareReplay())
     }
     return this.dependent$
