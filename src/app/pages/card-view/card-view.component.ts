@@ -31,6 +31,7 @@ export class CardViewComponent implements OnInit, OnDestroy {
   acessToCard$ = this.routeService.getUserDataStatus()
 
   ngOnInit(): void {
+    this.acessToCard$ = this.routeService.getUserDataStatus()
     this.breakpoint
       .getScreenInfo()
       .pipe(takeUntil(this.destroy$))
@@ -49,6 +50,7 @@ export class CardViewComponent implements OnInit, OnDestroy {
       });
 
     this.getCardsData();
+    
   }
 
   
