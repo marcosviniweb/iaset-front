@@ -1,5 +1,5 @@
 import { UserData } from './../../core/models/userData.model';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserCardComponent } from '../../components/user-card/user-card.component';
 import { BreakpointService } from '../../core/services/breakpoint.service';
@@ -15,7 +15,7 @@ import { RouteService } from '../../core/services/routeObserver.service';
   templateUrl: './card-view.component.html',
   styleUrl: './card-view.component.scss',
 })
-export class CardViewComponent implements OnInit, OnDestroy {
+export class CardViewComponent implements OnInit,AfterViewInit,OnDestroy {
   private breakpoint = inject(BreakpointService);
   private dataService = inject(CoreService);
   private route = inject(ActivatedRoute);
@@ -53,7 +53,9 @@ export class CardViewComponent implements OnInit, OnDestroy {
     
   }
 
-  
+  ngAfterViewInit(){
+    this.acessToCard$ = this.routeService.getUserDataStatus()
+  }
 
   getCardsData() {
     this.dataService
