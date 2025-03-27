@@ -84,6 +84,14 @@ export class CoreService {
     }
     return this.dependent$
   }
+  getDependentsCards(userId:number, newRequest?:'newRequest'){
+    if(!this.dependent$ || newRequest){
+      console.log('new Request')
+      this.dependent$ = this.httpClient.get<Dependent[]>(this.apiUrl.dataUser+`/${userId}/dependents?filterByStatus=true `)
+      .pipe(shareReplay())
+    }
+    return this.dependent$
+  }
 
   getUserData(userId:number, newRequest?:'newRequest'){
     if (!this.userData$ || newRequest) {
@@ -145,7 +153,7 @@ export class CoreService {
     return this.getUserData(userId)
     .pipe(
       switchMap((userData) => {
-        return this.getDependents(userData.id).pipe(
+        return this.getDependentsCards(userData.id).pipe(
           map((dependents) => {
             const dependentsWithMatricula = dependents.map((dependent) => {
               return { ...dependent, matricula: userData.matricula };
