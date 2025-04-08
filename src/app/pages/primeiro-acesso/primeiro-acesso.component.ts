@@ -40,7 +40,7 @@ export class PrimeiroAcessoComponent implements OnInit {
   }
 
   logOff() {
-    this.authService.logOff();
+    this.authService.logout();
   }
 
   async submit() {

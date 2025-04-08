@@ -12,6 +12,12 @@ export class NavComponent {
   private authService = inject(AuthService)
 
   logOff(){
-    this.authService.logOff()
+    this.authService.logout()
+  }
+
+  openWhatsApp() {
+    const phoneNumber = '5594991890954';
+    const url = `https://api.whatsapp.com/send?phone=${phoneNumber}`;
+    window.open(url, '_blank');
   }
 }
