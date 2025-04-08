@@ -66,6 +66,10 @@
       <h2>Complete suas informações de cadastro para ter acesso ao cartão</h2>
       <div class="container-button">
         <button class="ui button primary" [routerLink]="['/perfil']"  >Terminar cadastro</button>
+        <button class="ui button green" (click)="contatoWhatsApp()">
+          <i class="whatsapp icon"></i>
+          Dúvidas? Fale conosco
+        </button>
       </div>
   </div>
 }

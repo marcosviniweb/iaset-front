@@ -87,6 +87,12 @@ export class CardViewComponent implements OnInit,AfterViewInit,OnDestroy {
     return this.carouselDirection === 'vertical';
   }
 
+  contatoWhatsApp(): void {
+    const phoneNumber = '5594991890954';
+    const url = `https://api.whatsapp.com/send?phone=${phoneNumber}`;
+    window.open(url, '_blank');
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next('');
     this.destroy$.complete();
