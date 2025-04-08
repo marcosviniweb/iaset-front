@@ -210,4 +210,27 @@
         font-weight: 400;
         
     }
+    .container-button {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        max-width: 300px;
+        margin-top: 15px;
+        
+        button {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 5px;
+            
+            i {
+                font-size: 18px;
+                margin-right: 5px;
+                color: white;
+            }
+        }
+    }
 }
