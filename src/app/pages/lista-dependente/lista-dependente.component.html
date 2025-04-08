@@ -14,16 +14,21 @@
                 <tr>
                     <td>{{dependente.name}}</td>
                     <td>{{dependente.relationship == 'filho'? 'Filho(a)':'Cônjuge'}}</td>
-                    <td class="right aligned">
-                        <button class="ui icon button primary" [routerLink]="['/dependente', dependente.id]">
-                            <i class="edit icon"></i>
-                            Editar
-                          </button>
-                        <button class="ui icon button primary" (click)="deleteDependent(dependente.id)">
-                            <i class="trash icon"></i>
-                            Deletar
-                          </button>
-                    </td>
+                    @if(dependente.status){
+                        <td class="right aligned">
+                            <button class="ui icon button primary" [routerLink]="['/dependente', dependente.id]">
+                                <i class="edit icon"></i>
+                                Editar
+                              </button>
+                            <button class="ui icon button primary" (click)="deleteDependent(dependente.id, dependente.name)">
+                                <i class="trash icon"></i>
+                                Deletar
+                              </button>
+                        </td>
+                    } @else {
+                     <td class="right aligned waiting">Aguardando aprovação...</td>
+                    }
+                    
                     
                 </tr>
 

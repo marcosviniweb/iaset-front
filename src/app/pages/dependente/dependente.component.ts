@@ -13,7 +13,7 @@ import { UserData } from '../../core/models/userData.model';
 import { Dialog } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {  Subject, switchMap, takeUntil, tap } from 'rxjs';
 
 
@@ -33,7 +33,7 @@ export class DependenteComponent implements OnInit {
   private dataService = inject(CoreService);
   private dialog = inject(Dialog);
   private activatedRoute = inject(ActivatedRoute);
-  
+  private router = inject(Router)
   private userData = JSON.parse(
     localStorage.getItem('userData') as string
   ) as UserData;
@@ -46,6 +46,7 @@ export class DependenteComponent implements OnInit {
     relationship: ['', [Validators.required]],
     file: new FormControl<File | null>(null),
     hasDisability: [false],
+    status:false
   });
 
   destroy$ = new Subject();
@@ -136,12 +137,24 @@ export class DependenteComponent implements OnInit {
           status: 'sucess',
           message: 'Dependente cadastrado com sucesso !',
         };
+        if(confirm('Seu dependente foi cadastrado com sucesso, aguarde até que seu cadastro seja aprovado.')){
+          this.router.navigate(['/lista-dependentes'])
+        }
       },
       error: (error: HttpErrorResponse) => {
-        this.updateMessage = {
-          status: 'error',
-          message: 'Erro ao cadastrar o dependente - ' + 'Cod:' + error.status,
-        };
+        if(error.error.message){
+          this.updateMessage = {
+            status: 'error',
+            message: error.error.message + 'Cod:' + error.status,
+          }
+          
+        }else{
+          this.updateMessage = {
+            status: 'error',
+            message: 'Erro ao cadastrar o dependente - ' + 'Cod:' + error.status,
+          }
+          
+        }
         throw error;
       },
     });

@@ -90,9 +90,8 @@ export class CadastroComponent implements OnInit {
   }
 
   submitForm() {
-    if (this.registerForm.valid && !this.isSubmitting) {
-      // Evitar múltiplos envios
-      this.isSubmitting = true;
+    if (this.registerForm.valid) {
+      
       
       console.log('Valores do formulário:', this.registerForm.value);
       const formData = new FormData();

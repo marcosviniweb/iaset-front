@@ -31,14 +31,8 @@ export class CoreService {
       console.log(`${key}: ${value}`);
     });
     
-    // Desabilitar cache para evitar problemas de duplicação
-    const headers = new HttpHeaders({
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0'
-    });
     
-    return this.httpClient.post<{id: number, token: string}>(this.apiUrl.dataUser, body, { headers })
+    return this.httpClient.post<{id: number, token: string}>(this.apiUrl.dataUser, body)
       .pipe(
         catchError((error: HttpErrorResponse) => {
           console.error('Erro no cadastro:', error);
@@ -85,7 +79,15 @@ export class CoreService {
   getDependents(userId:number, newRequest?:'newRequest'){
     if(!this.dependent$ || newRequest){
       console.log('new Request')
-      this.dependent$ = this.httpClient.get<Dependent[]>(this.apiUrl.dataUser+`/${userId}/dependents`)
+      this.dependent$ = this.httpClient.get<Dependent[]>(this.apiUrl.dataUser+`/${userId}/dependents `)
+      .pipe(shareReplay())
+    }
+    return this.dependent$
+  }
+  getDependentsCards(userId:number, newRequest?:'newRequest'){
+    if(!this.dependent$ || newRequest){
+      console.log('new Request')
+      this.dependent$ = this.httpClient.get<Dependent[]>(this.apiUrl.dataUser+`/${userId}/dependents?filterByStatus=true `)
       .pipe(shareReplay())
     }
     return this.dependent$
@@ -151,7 +153,7 @@ export class CoreService {
     return this.getUserData(userId)
     .pipe(
       switchMap((userData) => {
-        return this.getDependents(userData.id).pipe(
+        return this.getDependentsCards(userData.id).pipe(
           map((dependents) => {
             const dependentsWithMatricula = dependents.map((dependent) => {
               return { ...dependent, matricula: userData.matricula };
