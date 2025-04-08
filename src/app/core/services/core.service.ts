@@ -4,6 +4,7 @@ import { inject, Injectable } from '@angular/core';
 import { APIUrl } from '../env/apiUrl';
 import { UserData } from '../models/userData.model';
 import { catchError, map, Observable, shareReplay, switchMap, tap, throwError } from 'rxjs';
+import { CardData } from '../models/cardData.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,16 +23,7 @@ export class CoreService {
     return JSON.parse(localStorage.getItem('userData') as string || '{}') as UserData
   }
   
-  setUser(body:FormData){
-    console.log('URL da API:', this.apiUrl.dataUser);
-    
-    // Exibir os dados que estão sendo enviados
-    console.log('Enviando dados para o backend:');
-    body.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
-    });
-    
-    
+  setUser(body:FormData){  
     return this.httpClient.post<{id: number, token: string}>(this.apiUrl.dataUser, body)
       .pipe(
         catchError((error: HttpErrorResponse) => {
@@ -84,6 +76,7 @@ export class CoreService {
     }
     return this.dependent$
   }
+
   getDependentsCards(userId:number, newRequest?:'newRequest'){
     if(!this.dependent$ || newRequest){
       console.log('new Request')
@@ -159,7 +152,7 @@ export class CoreService {
               return { ...dependent, matricula: userData.matricula };
             });
 
-            const allCards = [userData, ...dependentsWithMatricula];
+            const allCards = [userData, ...dependentsWithMatricula] as CardData[];
             return allCards;
           })
         );

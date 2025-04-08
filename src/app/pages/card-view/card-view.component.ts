@@ -1,12 +1,11 @@
-import { UserData } from './../../core/models/userData.model';
 import { AfterViewInit, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserCardComponent } from '../../components/user-card/user-card.component';
 import { BreakpointService } from '../../core/services/breakpoint.service';
-import { CoreService } from '../../core/services/core.service';
-import { Subject, takeUntil } from 'rxjs';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { map, Subject, takeUntil } from 'rxjs';
+import { RouterModule } from '@angular/router';
 import { RouteService } from '../../core/services/routeObserver.service';
+import { DataService } from '../../core/services/data.service';
 
 @Component({
   selector: 'app-card-view',
@@ -17,11 +16,8 @@ import { RouteService } from '../../core/services/routeObserver.service';
 })
 export class CardViewComponent implements OnInit,AfterViewInit,OnDestroy {
   private breakpoint = inject(BreakpointService);
-  private dataService = inject(CoreService);
-  private route = inject(ActivatedRoute);
   private routeService = inject(RouteService)
-
-  UserData = JSON.parse(localStorage.getItem('userData') as string) as UserData;
+  private coreService = inject(DataService)
   userCards: any[] = [];
 
   carouselDirection: 'horizontal' | 'vertical' = 'horizontal';
@@ -31,6 +27,7 @@ export class CardViewComponent implements OnInit,AfterViewInit,OnDestroy {
   acessToCard$ = this.routeService.getUserDataStatus()
 
   ngOnInit(): void {
+    
     this.acessToCard$ = this.routeService.getUserDataStatus()
     this.breakpoint
       .getScreenInfo()
@@ -58,20 +55,9 @@ export class CardViewComponent implements OnInit,AfterViewInit,OnDestroy {
   }
 
   getCardsData() {
-    this.dataService
-      .getCardsData(this.UserData.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((allCards) => {
-        this.userCards = allCards;
-
-        this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
-          const id = params['id'];
-          if (id && this.isVertical()) {
-            this.userCards = [];
-            this.userCards.push(allCards[id]);
-          }
-        });
-      });
+    this.coreService.getDataStore()
+    .pipe(map(data=> data.cardData))
+    .subscribe(cards=> this.userCards = cards!)
   }
 
   navigateCarousel(direction: number): void {

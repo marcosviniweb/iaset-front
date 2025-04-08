@@ -1,13 +1,17 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { DataService } from '../services/data.service';
+import { firstValueFrom, map } from 'rxjs';
 
-export const firstAcessGuard: CanActivateFn = (route, state) => {
-  const userData = localStorage.getItem('userData');
+
+export const firstAcessGuard: CanActivateFn =  async(route, state) => {
+  const coreService = inject(DataService);
+  const router = inject(Router);
+  const userData = await firstValueFrom(coreService.getDataStore()
+  .pipe(map(data=> data.userData)))
+  
   if (userData) {
-    const parsedData = JSON.parse(userData);
-    console.log(parsedData)
-    if (parsedData.firstAccess) {
-      const router = inject(Router);
+    if (userData.firstAccess) {
       router.navigate(['/primeiro-acesso']);
       return false;
     }

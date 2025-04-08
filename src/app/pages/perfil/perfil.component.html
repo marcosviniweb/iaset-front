@@ -13,7 +13,7 @@
             <label >Foto de Perfil</label>
             <div class="photo">
                 <input #photo type="file" (change)="imgFile($event)">
-                <img [src]="profileImg ?  profileImg:imgUrl+updateForm.value.photo " alt="">
+                <img [src]="profileImg ? profileImg:imgUrl+updateForm.value.photo" alt="">
                 <div class="select-picture" (click)="photo.click()">
                     <i class="camera icon"></i>
                     <p >Selecione uma Foto</p>

@@ -7,6 +7,7 @@ import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, Validatio
 import { CommonModule } from '@angular/common';
 import { UserData } from '../../core/models/userData.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { DataService } from '../../core/services/data.service';
 
 @Component({
   selector: 'app-primeiro-acesso',
@@ -17,6 +18,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class PrimeiroAcessoComponent implements OnInit {
   private authService = inject(AuthService);
   private fb = inject(NonNullableFormBuilder);
+  private coreService = inject(DataService)
 
   userData: UserData = JSON.parse(localStorage.getItem('userData') as string || '{}');
   private route = inject(Router);
@@ -74,7 +76,7 @@ export class PrimeiroAcessoComponent implements OnInit {
         // Atualizar userData no localStorage para refletir a mudança no firstAccess
         if (this.userData) {
           this.userData.firstAccess = false;
-          localStorage.setItem('userData', JSON.stringify(this.userData));
+          this.coreService.updateDataStore(this.userData, 'userData')
         }
         
         // Sucesso - redirecionar para a página principal

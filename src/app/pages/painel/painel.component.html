@@ -10,18 +10,18 @@
             @if(acessToCard$ | async ){
 
           
-            @if(userCards.length > 1){
+            @if(userCards$ | async; as userCards){
               <div class="carousel-container" [class.horizontal]="!isVertical()">
                 <!-- Setas para navegação quando vertical -->
                 <ng-container *ngIf="isVertical()">
-                  <div class="carousel-arrow up" (click)="navigateCarousel(-1)" tabindex="0" (keydown.enter)="navigateCarousel(-1)">
+                  <div class="carousel-arrow up" (click)="navigateCarousel(userCards,-1)" tabindex="0" (keydown.enter)="navigateCarousel(userCards,-1)">
                     <i class="angle up icon"></i>
                   </div>
                 </ng-container>
                 
                 <!-- Setas para navegação quando horizontal -->
                 <ng-container *ngIf="!isVertical()">
-                  <div class="carousel-arrow left" (click)="navigateCarousel(-1)" tabindex="0" (keydown.enter)="navigateCarousel(-1)">
+                  <div class="carousel-arrow left" (click)="navigateCarousel(userCards,-1)" tabindex="0" (keydown.enter)="navigateCarousel(userCards,-1)">
                     <i class="angle left icon"></i>
                   </div>
                 </ng-container>
@@ -59,14 +59,14 @@
                
                  
                 <ng-container *ngIf="isVertical()">
-                  <div class="carousel-arrow down" (click)="navigateCarousel(1)" tabindex="0" (keydown.enter)="navigateCarousel(1)">
+                  <div class="carousel-arrow down" (click)="navigateCarousel(userCards,1)" tabindex="0" (keydown.enter)="navigateCarousel(userCards,1)">
                     <i class="angle down icon"></i>
                   </div>
                 </ng-container>
                 
                 <!-- Setas para navegação quando horizontal -->
                 <ng-container *ngIf="!isVertical()">
-                  <div class="carousel-arrow right" (click)="navigateCarousel(1)" tabindex="0" (keydown.enter)="navigateCarousel(1)">
+                  <div class="carousel-arrow right" (click)="navigateCarousel(userCards,1)" tabindex="0" (keydown.enter)="navigateCarousel(userCards,1)">
                     <i class="angle right icon"></i>
                   </div>
                 </ng-container>
@@ -76,9 +76,9 @@
                     *ngFor="let card of userCards; let i = index" 
                     class="indicator" 
                     [class.active]="i === currentCardIndex"
-                    (click)="setCurrentCard(i)"
+                    (click)="setCurrentCard(userCards,i)"
                     tabindex="0"
-                    (keydown.enter)="setCurrentCard(i)">
+                    (keydown.enter)="setCurrentCard(userCards, i)">
                   </span>
                 </div>
               </div>

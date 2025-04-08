@@ -1,14 +1,14 @@
-import { CardData } from './../../core/models/cardData.model';
 import { AfterViewInit, ChangeDetectorRef, Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import {  ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
+import {   RouterModule } from '@angular/router';
 import { QuickAccessComponent } from '../../components/quick-access/quick-access.component';
 import { CommonModule } from '@angular/common';
 import { LayoutModule} from '@angular/cdk/layout';
-import { BehaviorSubject, filter, map, startWith, Subject, tap } from 'rxjs';
+import { map,Observable,Subject,takeUntil } from 'rxjs';
 import { BreakpointService } from '../../core/services/breakpoint.service';
 import { RouteService } from '../../core/services/routeObserver.service';
-import { CoreService } from '../../core/services/core.service';
 import { UserData } from '../../core/models/userData.model';
+import { DataService } from '../../core/services/data.service';
+import { CardData } from '../../core/models/cardData.model';
 
 @Component({
   selector: 'app-painel',
@@ -22,7 +22,7 @@ export class PainelComponent implements AfterViewInit, OnInit{
   private breakPoint = inject(BreakpointService)
   private routeService = inject(RouteService)
   protected CardData:UserData = JSON.parse(localStorage.getItem('userData') as string) 
-  private serviceData = inject(CoreService)
+  private serviceData = inject(DataService)
 
   @ViewChild('mobile') mobile!: TemplateRef<any>;
   @ViewChild('desktop') desktop!: TemplateRef<any>;
@@ -39,15 +39,18 @@ export class PainelComponent implements AfterViewInit, OnInit{
 
   acessToCard$ = this.routeService.getUserDataStatus()
   currentCardIndex = 0;
-  userCards: any[] = [];
+  userCards$ = new Observable<CardData[]>()
   carouselDirection: 'vertical' | 'horizontal' = 'horizontal';
 
   ngOnInit(): void {
-      this.serviceData.getCardsData(this.CardData.id)
-      .subscribe((cards)=>{
-        this.userCards = cards
-      })
+    this.userCards$ = this.serviceData.getDataStore()
+    .pipe(
+      map((data)=> data!.cardData!)
+    )
+    
   }
+
+  
   ngAfterViewInit(): void {
      this.breakPoint.getScreenInfo()    
       .subscribe(
@@ -58,16 +61,16 @@ export class PainelComponent implements AfterViewInit, OnInit{
       this.cdf.detectChanges()
   }
 
-  navigateCarousel(direction: number): void {
+  navigateCarousel(userCards:CardData[],direction: number): void {
     const newIndex = this.currentCardIndex + direction;
     
-    if (newIndex >= 0 && newIndex < this.userCards.length) {
+    if (newIndex >= 0 && newIndex < userCards.length) {
       this.currentCardIndex = newIndex;
     }
   }
 
-  setCurrentCard(index: number): void {
-    if (index >= 0 && index < this.userCards.length) {
+  setCurrentCard(userCards:CardData[] ,index: number): void {
+    if (index >= 0 && index < userCards.length) {
       this.currentCardIndex = index;
     }
   }

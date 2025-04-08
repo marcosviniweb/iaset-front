@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { DataService } from './core/services/data.service';
 
 
 @Component({
@@ -18,9 +19,12 @@ import { RouterModule } from '@angular/router';
     `,
   ],
 })
-export class AppComponent {
-
+export class AppComponent implements OnInit{
+  private dataService = inject(DataService)
   title = 'IASET';
+  ngOnInit(): void {
+    this.dataService.getDataStore().subscribe(result=> console.log(result))
 
+  }
  
 }
