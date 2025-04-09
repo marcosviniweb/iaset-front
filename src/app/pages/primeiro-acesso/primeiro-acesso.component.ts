@@ -7,7 +7,6 @@ import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, Validatio
 import { CommonModule } from '@angular/common';
 import { UserData } from '../../core/models/userData.model';
 import { HttpErrorResponse } from '@angular/common/http';
-import { DataService } from '../../core/services/data.service';
 
 @Component({
   selector: 'app-primeiro-acesso',
@@ -18,7 +17,7 @@ import { DataService } from '../../core/services/data.service';
 export class PrimeiroAcessoComponent implements OnInit {
   private authService = inject(AuthService);
   private fb = inject(NonNullableFormBuilder);
-  private coreService = inject(DataService)
+  private coreService = inject(CoreService)
 
   userData: UserData = JSON.parse(localStorage.getItem('userData') as string || '{}');
   private route = inject(Router);

@@ -1,11 +1,11 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { DataService } from '../services/data.service';
 import { firstValueFrom, map } from 'rxjs';
+import { CoreService } from '../services/core.service';
 
 
 export const firstAcessGuard: CanActivateFn =  async(route, state) => {
-  const coreService = inject(DataService);
+  const coreService = inject(CoreService);
   const router = inject(Router);
   const userData = await firstValueFrom(coreService.getDataStore()
   .pipe(map(data=> data.userData)))

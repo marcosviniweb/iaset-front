@@ -16,7 +16,7 @@
                     <td>{{dependente.relationship == 'filho'? 'Filho(a)':'Cônjuge'}}</td>
                     @if(dependente.status){
                         <td class="right aligned">
-                            <button class="ui icon button primary" [routerLink]="['/dependente', dependente.id]">
+                            <button class="ui icon button primary" (click)="editDepedent(dependente)">
                                 <i class="edit icon"></i>
                                 Editar
                               </button>

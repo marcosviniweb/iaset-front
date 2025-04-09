@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, OnInit, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
+import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CpfCnpjMaskDirective } from '../../shared/directives/cpfMask.directive';
 import { PhoneMaskDirective } from '../../shared/directives/phoneMask.directive';
-import { CoreService } from '../../core/services/core.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { CoreService } from '../../core/services/core.service';
 
 @Component({
   selector: 'app-cadastro',
@@ -20,7 +20,7 @@ export class CadastroComponent implements OnInit {
   @ViewChild('dialog') templateSucess!:TemplateRef<HTMLElement>
   @ViewChild('dialogError') templateError!:TemplateRef<HTMLElement>
 
-  private dataService = inject(CoreService)
+  private coreService = inject(CoreService)
   readonly dialog = inject(MatDialog);
   private router = inject(Router);
   fb = inject(NonNullableFormBuilder)
@@ -134,7 +134,7 @@ export class CadastroComponent implements OnInit {
         console.log(`${pair[0]}: ${pair[1]}`);
       }
       
-      this.dataService.setUser(formData)
+      this.coreService.setUser(formData)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
@@ -181,7 +181,7 @@ export class CadastroComponent implements OnInit {
   updateFirstAccess(userId: number) {
     console.log('Atualizando firstAccess para false para usuário:', userId);
     
-    this.dataService.updateFirstAccess(userId, false)
+    this.coreService.updateFirstAccess(false)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {

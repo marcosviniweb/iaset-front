@@ -5,7 +5,7 @@ import { BreakpointService } from '../../core/services/breakpoint.service';
 import { map, Subject, takeUntil } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { RouteService } from '../../core/services/routeObserver.service';
-import { DataService } from '../../core/services/data.service';
+import { CoreService } from '../../core/services/core.service';
 
 @Component({
   selector: 'app-card-view',
@@ -17,18 +17,18 @@ import { DataService } from '../../core/services/data.service';
 export class CardViewComponent implements OnInit,AfterViewInit,OnDestroy {
   private breakpoint = inject(BreakpointService);
   private routeService = inject(RouteService)
-  private coreService = inject(DataService)
+  private coreService = inject(CoreService)
   userCards: any[] = [];
 
   carouselDirection: 'horizontal' | 'vertical' = 'horizontal';
   currentCardIndex = 0;
 
   destroy$ = new Subject();
-  acessToCard$ = this.routeService.getUserDataStatus()
+  acessToCard$ = this.coreService.getUserDataStatus()
 
   ngOnInit(): void {
     
-    this.acessToCard$ = this.routeService.getUserDataStatus()
+    this.acessToCard$ = this.coreService.getUserDataStatus()
     this.breakpoint
       .getScreenInfo()
       .pipe(takeUntil(this.destroy$))
@@ -51,12 +51,15 @@ export class CardViewComponent implements OnInit,AfterViewInit,OnDestroy {
   }
 
   ngAfterViewInit(){
-    this.acessToCard$ = this.routeService.getUserDataStatus()
+    this.acessToCard$ = this.coreService.getUserDataStatus()
   }
 
   getCardsData() {
     this.coreService.getDataStore()
-    .pipe(map(data=> data.cardData))
+    .pipe(
+      map(data=> data.cardData),
+      takeUntil(this.destroy$)
+    )
     .subscribe(cards=> this.userCards = cards!)
   }
 

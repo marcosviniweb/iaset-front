@@ -1,184 +1,140 @@
-import { Dependent } from './../models/dependents.model';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { APIUrl } from '../env/apiUrl';
-import { UserData } from '../models/userData.model';
-import { catchError, map, Observable, shareReplay, switchMap, tap, throwError } from 'rxjs';
+import { Dependent } from './../models/dependents.model';
+import { UserData, userResponse } from '../models/userData.model';
+import { DataStore } from '../models/dataStore.model';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { CardData } from '../models/cardData.model';
+import { DataService } from './data.service';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class CoreService {
-
-  private httpClient = inject(HttpClient)
-  private apiUrl = APIUrl
-  
-  dependent$!:Observable<Dependent[]>
-  dependentById$!:Observable<Dependent>
-  userData$!:Observable<UserData>
-
-  // Carregar dados do localStorage apenas quando necessário
-  get userData() {
-    return JSON.parse(localStorage.getItem('userData') as string || '{}') as UserData
-  }
-  
-  setUser(body:FormData){  
-    return this.httpClient.post<{id: number, token: string}>(this.apiUrl.dataUser, body)
-      .pipe(
-        catchError((error: HttpErrorResponse) => {
-          console.error('Erro no cadastro:', error);
-          console.error('Detalhes do erro:', error.error);
-          console.error('Status:', error.status);
-          console.error('Status text:', error.statusText);
-          return throwError(() => error);
-        })
-      );
-  }
-  
-  // Método para atualizar o status de primeiro acesso do usuário
-  updateFirstAccess(userId: number, firstAccess: boolean) {
-    console.log(`Atualizando firstAccess para ${firstAccess} para usuário ID ${userId}`);
-    
-    const url = `${this.apiUrl.dataUser}/${userId}/first-access`;
-    const body = { firstAccess };
-    
-    // Cria headers apropriados para a requisição
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-    
-    console.log('URL da requisição:', url);
-    console.log('Dados enviados:', body);
-    
-    return this.httpClient.put(url, body, { headers })
-      .pipe(
-        tap(response => console.log('Resposta da atualização de firstAccess:', response)),
-        catchError((error: HttpErrorResponse) => {
-          console.error('Erro ao atualizar firstAccess:', error);
-          console.error('Status:', error.status);
-          console.error('Mensagem:', error.error);
-          return throwError(() => error);
-        })
-      );
-  }
-  
-  setDependent(userId:number, body:FormData ){
-    return this.httpClient.post(this.apiUrl.dataUser+`/${userId}/dependents`, body)
-    .pipe(tap(()=> this.getDependents(this.userData.id, 'newRequest')))
-  }
-  
-  getDependents(userId:number, newRequest?:'newRequest'){
-    if(!this.dependent$ || newRequest){
-      console.log('new Request')
-      this.dependent$ = this.httpClient.get<Dependent[]>(this.apiUrl.dataUser+`/${userId}/dependents `)
-      .pipe(shareReplay())
+  constructor(){
+    if(this.localData){
+      //checagem de dados para o cartão
+      this.checkUserData(this.localData.userData!)
     }
-    return this.dependent$
+
+  }
+  //variaveis
+  private apiService = inject(DataService);
+  private data_store$ = new BehaviorSubject<DataStore>(
+    this.localData ? this.localData : {}
+  );
+  //metodos
+  async setInitialData(initialData: UserData) {
+
+    const userData = initialData;
+    this.checkUserData(userData)
+    const cardData = await firstValueFrom(
+      this.apiService.getCardsData(userData.id)
+    );
+
+    const listDependent = await firstValueFrom(
+      this.apiService.getDependents(userData.id)
+    );
+
+    const coreData = {
+      userData: userData,
+      listDependent: listDependent,
+      cardData: cardData,
+      dependent: null,
+    };
+    this.setLocalData(coreData);
+    
+    return this.data_store$.next(coreData as DataStore);
   }
 
-  getDependentsCards(userId:number, newRequest?:'newRequest'){
-    if(!this.dependent$ || newRequest){
-      console.log('new Request')
-      this.dependent$ = this.httpClient.get<Dependent[]>(this.apiUrl.dataUser+`/${userId}/dependents?filterByStatus=true `)
-      .pipe(shareReplay())
-    }
-    return this.dependent$
+  getDataStore() {
+    return this.data_store$;
   }
 
-  getUserData(userId:number, newRequest?:'newRequest'){
-    if (!this.userData$ || newRequest) {
-      console.log('Iniciando nova requisição para dados do usuário', userId)
-      this.userData$ = this.httpClient.get<UserData>(this.apiUrl.dataUser+`/${userId}`)
-        .pipe(
-          tap(userData => {
-            console.log('Dados do usuário recebidos:', userId)
-            // Atualizar o localStorage com os dados mais recentes
-            localStorage.setItem('userData', JSON.stringify(userData))
-          }),
-          shareReplay(1),
-          catchError((error: HttpErrorResponse) => {
-            console.error('Erro ao obter dados do usuário:', error)
-            return throwError(() => error)
-          })
-        );
-    }
-    return this.userData$;
+  async getListDependent(){
+    const userId = this.data_store$.getValue().userData!.id
+    const list = await firstValueFrom(this.apiService.getDependents(userId))
+    this.updateDataStore(list, 'listDependent')
   }
 
-  updateUserData(userId:number, body:FormData){
-    return this.httpClient.put(this.apiUrl.dataUser+`/${userId}`, body)
-      .pipe(
-        tap(response => {
-          console.log('Dados atualizados com sucesso')
-          // Limpar o cache após atualização
-          this.userData$ = null!
-          // Atualizar o localStorage com os dados mais recentes
-          localStorage.setItem('userData', JSON.stringify(response))
-        }),
-        catchError((error: HttpErrorResponse) => {
-          console.error('Erro ao atualizar dados do usuário:', error)
-          
-          // Tratar erro de email duplicado
-          if (error.status === 409 || 
-              (error.error && error.error.message && 
-               error.error.message.includes('esse CPF, matrícula ou e-mail'))) {
-            return throwError(() => ({
-              ...error,
-              error: {
-                ...error.error,
-                message: 'Este email já está em uso por outro usuário.'
-              }
-            }))
-          }
-          
-          return throwError(() => error)
-        })
-      )
+  setUser(formData:FormData){
+    return this.apiService.setUser(formData)
+  }
+  
+  setDepedent(formData:FormData){
+    const userId = this.data_store$.getValue().userData!.id
+    return this.apiService.setDependent(userId, formData)
   }
 
-  updateDependent(userId:number, depId:number, body:FormData){
-    return this.httpClient.put(this.apiUrl.dataUser+`/${userId}/dependents/${depId}`, body)
-    .pipe(tap(()=> this.getDependents(this.userData.id)))
+  updateUserData(formData:FormData){
+    const userId = this.data_store$.getValue().userData!.id
+    return this.apiService.updateUserData(userId, formData)
+  }
+  updateFirstAccess(status:boolean){
+    const userId = this.data_store$.getValue().userData!.id
+    return this.apiService.updateFirstAccess(userId, status)
   }
 
-  getCardsData(userId:number){
-    return this.getUserData(userId)
-    .pipe(
-      switchMap((userData) => {
-        return this.getDependentsCards(userData.id).pipe(
-          map((dependents) => {
-            const dependentsWithMatricula = dependents.map((dependent) => {
-              return { ...dependent, matricula: userData.matricula };
-            });
-
-            const allCards = [userData, ...dependentsWithMatricula] as CardData[];
-            return allCards;
-          })
-        );
-      }),
-    )
+  updateDependent(dependentId:number,formData:FormData){
+    const userId = this.data_store$.getValue().userData!.id
+   return this.apiService.updateDependent(userId, dependentId, formData)
+  }
+  //atualiza os dados de uma propriedade especifica
+  updateDataStore(
+    data: UserData | CardData[] | Dependent | Dependent[] | null,
+    dataType: 'userData' | 'dependent' | 'cardData' |'listDependent'
+  ) {
+    const newData = {
+      ...this.data_store$.getValue(),
+      [dataType!]: data,
+    } as DataStore;
+    this.setLocalData(newData);
+    this.checkUserData(newData.userData!)
+    this.data_store$.next(newData);
   }
 
-  deleteDependent(userId:number, dependentId:number){
-    return this.httpClient.delete<Dependent>(this.apiUrl.dataUser+`/${userId}/dependents/${dependentId}`)
-    .pipe(tap(()=> this.getDependents(this.userData.id, 'newRequest')))
+  //metodo para atualizar os dados depois de uma alteração de dados (dependente)
+  async newDataRequest(){
+    const userId = this.data_store$.getValue().userData!.id
+    const cardData = await firstValueFrom(
+      this.apiService.getCardsData(userId)
+    );
+    this.updateDataStore(cardData, 'cardData')
+
+    const listDependent = await firstValueFrom(
+      this.apiService.getDependents(userId)
+    );
+    console.log(listDependent)
+    this.updateDataStore(listDependent, 'listDependent')
+    
   }
 
-  // Método para limpar o cache das requisições
-  clearCache(): void {
-    this.userData$ = null!;
-    this.dependent$ = null!;
-    console.log('Cache de requisições limpo');
+  deleteDependent(dependentId:number){
+    const userId = this.data_store$.getValue().userData!.id
+    firstValueFrom(this.apiService.deleteDependent(userId,dependentId))
+    .then(()=> this.newDataRequest())
+    .catch(error=> {throw error})
   }
 
-  // Método para fazer logout completo
-  logout(): void {
-    // Limpa o cache primeiro
-    this.clearCache();
-    // Remove dados do localStorage
-    localStorage.removeItem('userData');
-    localStorage.removeItem('token');
+  //localStorage
+  get localData() {
+    return JSON.parse(localStorage.getItem('coreData') as string) as DataStore;
+  }
+  
+  setLocalData(data: DataStore) {
+    localStorage.setItem('coreData', JSON.stringify(data));
   }
 
+  //valida os dados para mostrar o cartão
+  private userData$ = new BehaviorSubject<boolean>(false);  
+
+  private checkUserData(userData:UserData): void {
+    const isProfileComplete = userData && userData.name && userData.matricula && userData.cpf && userData.birthDay;
+    this.userData$.next(!!isProfileComplete);
+  }
+
+  getUserDataStatus(){
+    return this.userData$.asObservable()
+  }
+  
 }

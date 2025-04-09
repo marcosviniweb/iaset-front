@@ -1,11 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { APIUrl } from '../env/apiUrl';
-import { UserData, userResponse } from '../models/userData.model';
+import { userResponse } from '../models/userData.model';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { CoreService } from '../services/core.service';
-import { DataService } from '../services/data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,26 +15,22 @@ export class AuthService {
   private httpClient = inject(HttpClient)
   private apiUrl = APIUrl
   private coreService = inject(CoreService)
-  private dataService = inject(DataService)
 
   
 
   async auth(body: { emailOrCpf: string; pass: string }): Promise<any> {
     console.log('Autenticando usuário:', body.emailOrCpf);
     
-    // Limpar cache anterior para garantir dados limpos
-    this.coreService.clearCache();
     
     try {
       const response = await firstValueFrom(
         this.httpClient.post<userResponse>(this.apiUrl.auth, body)
       );
 
-      this.dataService.setInitialData(response)
+      this.coreService.setInitialData(response.user)
       // Armazenar token
       localStorage.setItem('token', response.access_token);
       
-
       if(response.user.firstAccess){
         this.router.navigate(['/primeiro-acesso']);
       } else {
@@ -68,11 +63,12 @@ export class AuthService {
 
   clearUserData(): void {
     localStorage.removeItem('coreData');
+    localStorage.removeItem('userDataa');
     localStorage.removeItem('token');
   }
 
   async passwordChange(data: {oldPassword: string, newPassword: string}) {
-    const userData = this.dataService.getDataStore().value.userData
+    const userData = this.coreService.getDataStore().value.userData
     if (!userData || !userData.id) {
       console.error('Erro: Dados de usuário não encontrados');
       throw {
@@ -96,7 +92,7 @@ export class AuthService {
   }
 
   async changeFirstAccess(body: {firstAccess: boolean;}) {
-    const userData = this.dataService.getDataStore().value.userData
+    const userData = this.coreService.getDataStore().value.userData
  
     if (!userData || !userData.id) {
       console.error('Erro: userData ou userData.id não está definido');

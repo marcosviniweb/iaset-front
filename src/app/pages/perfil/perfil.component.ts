@@ -1,16 +1,16 @@
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { Component, inject, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { AbstractControl, FormControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { CoreService } from '../../core/services/core.service';
-import { UpdateData, UserData } from '../../core/models/userData.model';
-import { map, skip, Subject, takeUntil } from 'rxjs';
+import { UserData } from '../../core/models/userData.model';
+import { Subject, takeUntil } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { PhoneMaskDirective } from '../../shared/directives/phoneMask.directive';
 import { CpfCnpjMaskDirective } from '../../shared/directives/cpfMask.directive';
 import { UrlImg } from '../../core/env/imgUrl';
 import { AuthService } from '../../core/auth/auth.service';
-import { DataService } from '../../core/services/data.service';
+
 
 @Component({
   selector: 'app-perfil',
@@ -20,10 +20,9 @@ import { DataService } from '../../core/services/data.service';
 })
 export class PerfilComponent implements OnInit, OnDestroy {
   private fb = inject(NonNullableFormBuilder)
-  private dataService = inject(CoreService)
   readonly dialog = inject(MatDialog)
   private authService = inject(AuthService)
-  private coreService = inject(DataService)
+  private coreService = inject(CoreService)
   updateForm = this.fb.group({
     name: ['', [Validators.minLength(2)]],
     birthDay:[''],
@@ -55,17 +54,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.passwordForm.setValidators(this.passwordMatchValidator)
     this.getUserData()
-    
-    // Monitor changes to birthDay and format appropriately
-    // But don't add the listener again if we're reloading data
-    this.updateForm.get('birthDay')?.valueChanges.subscribe((value) => {
-      console.log(value)
-      // if (value) {
-      //   console.log(value)
-      //   const formatDate = this.formatarData(value)
-      //   this.updateForm.get('birthDay')?.setValue(formatDate, {emitEvent: false})
-      // }
-    })
   }
 
   getUserData(){
@@ -75,21 +63,19 @@ export class PerfilComponent implements OnInit, OnDestroy {
     )
     .subscribe((data)=>{
       if(data.userData){
+        console.log(data.userData)
         const userData = data.userData
         this.userId = userData.id
         this.updateData(userData)
-        console.log(this.userId)
       }
       
     })
   }
 
   updateData(userData: UserData){
-    localStorage.setItem('userData', JSON.stringify(userData))
-    
-    
     if (userData.birthDay) {
       const formattedBirthDay = this.formatarData(userData.birthDay)
+      console.log(formattedBirthDay)
       this.updateForm.patchValue({
         ...userData as any,
         birthDay: formattedBirthDay
@@ -153,13 +139,14 @@ export class PerfilComponent implements OnInit, OnDestroy {
         formData.append(key, this.updateForm.get(key)?.value) : null
     });
     
-    this.dataService.updateUserData(this.userId, formData)
+    this.coreService.updateUserData(formData)
     .subscribe({
       next:(response)=> {
         const userData = response as UserData
         this.dialog.closeAll()
         this.updateData(userData)
         this.coreService.updateDataStore(userData, 'userData')
+        this.coreService.newDataRequest()
         this.updateMessage = {status:'sucess', message:'Informações atualizadas com sucesso !'}
       },
       error:(error:HttpErrorResponse)=>{
@@ -182,6 +169,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
     .then((sucess:any)=> {
       const responseMsg = sucess.message
       this.updateMessagePass =  {status:'sucess', message:responseMsg}
+      
     })
     .catch((error:HttpErrorResponse)=>{
      error.error.message

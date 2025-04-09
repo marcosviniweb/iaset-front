@@ -1,3 +1,4 @@
+import { CoreService } from './../../core/services/core.service';
 import { AfterViewInit, ChangeDetectorRef, Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import {   RouterModule } from '@angular/router';
 import { QuickAccessComponent } from '../../components/quick-access/quick-access.component';
@@ -7,7 +8,6 @@ import { map,Observable,Subject,takeUntil } from 'rxjs';
 import { BreakpointService } from '../../core/services/breakpoint.service';
 import { RouteService } from '../../core/services/routeObserver.service';
 import { UserData } from '../../core/models/userData.model';
-import { DataService } from '../../core/services/data.service';
 import { CardData } from '../../core/models/cardData.model';
 
 @Component({
@@ -22,7 +22,7 @@ export class PainelComponent implements AfterViewInit, OnInit{
   private breakPoint = inject(BreakpointService)
   private routeService = inject(RouteService)
   protected CardData:UserData = JSON.parse(localStorage.getItem('userData') as string) 
-  private serviceData = inject(DataService)
+  private coreService = inject(CoreService)
 
   @ViewChild('mobile') mobile!: TemplateRef<any>;
   @ViewChild('desktop') desktop!: TemplateRef<any>;
@@ -37,13 +37,13 @@ export class PainelComponent implements AfterViewInit, OnInit{
     })
   )
 
-  acessToCard$ = this.routeService.getUserDataStatus()
+  acessToCard$ = this.coreService.getUserDataStatus()
   currentCardIndex = 0;
   userCards$ = new Observable<CardData[]>()
   carouselDirection: 'vertical' | 'horizontal' = 'horizontal';
 
   ngOnInit(): void {
-    this.userCards$ = this.serviceData.getDataStore()
+    this.userCards$ = this.coreService.getDataStore()
     .pipe(
       map((data)=> data!.cardData!)
     )

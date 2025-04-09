@@ -1,5 +1,5 @@
 import { Dependent } from './../../core/models/dependents.model';
-import { Component, inject, OnInit, TemplateRef } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CpfCnpjMaskDirective } from '../../shared/directives/cpfMask.directive';
 import {
@@ -14,7 +14,7 @@ import { Dialog } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import {  Subject, switchMap, takeUntil, tap } from 'rxjs';
+import {  map, Subject, switchMap, takeUntil, tap } from 'rxjs';
 
 
 @Component({
@@ -28,9 +28,10 @@ import {  Subject, switchMap, takeUntil, tap } from 'rxjs';
   templateUrl: './dependente.component.html',
   styleUrl: './dependente.component.scss',
 })
-export class DependenteComponent implements OnInit {
+export class DependenteComponent implements OnInit, OnDestroy {
   private fb = inject(NonNullableFormBuilder);
-  private dataService = inject(CoreService);
+
+  private coreService = inject(CoreService)
   private dialog = inject(Dialog);
   private activatedRoute = inject(ActivatedRoute);
   private router = inject(Router)
@@ -56,41 +57,24 @@ export class DependenteComponent implements OnInit {
   depId!:number
   
   ngOnInit(): void {
-    this.getDependents()
+    this.coreService.getDataStore()
     .pipe(
-      takeUntil(this.destroy$),
-      tap((dep)=> this.verifySpouse(dep)),
-      switchMap(dep=> this.setDependentFromParam(dep))
-    )
-    .subscribe();
+      map(data=> data.dependent)
+    ).subscribe(dependent=>{
+      if(dependent){
+        this.depId = dependent.id
+        this.dependentForm.patchValue(dependent)
+        this.dependentForm.controls.birthDate.setValue(this.formatarData(dependent.birthDate))
+        this.dependentForm.controls.relationship.disable()
+        this.submitType = 'edit'
+      }
+    })
   }
 
-  setDependentFromParam(Dependent:Dependent[]){
-    return this.activatedRoute.params
-        .pipe(
-        takeUntil(this.destroy$),
-        tap((params) => {
-          const depId = params['id']
-          if (depId) {
-            this.depId = depId
-            const editDep = Dependent.find((dep)=>  dep.id == depId)
-            if(editDep){
-              this.dependentForm.patchValue(editDep)
-              this.dependentForm.controls.birthDate.setValue(this.formatarData(editDep.birthDate))
-              this.submitType = 'edit'
-            }
-          }
-        })
-      )
-    
-  }
-
-  getDependents(){
-    return this.dataService.getDependents(this.userData.id)
-  }
 
   verifySpouse(dependents:Dependent[]){
-    if(!!dependents.find((dep)=> dep.relationship.includes('conjuge'))){
+    const list = this.coreService.getDataStore().getValue().listDependent !
+    if(!!list.find((dep)=> dep.relationship.includes('conjuge'))){
       this.dependentForm.controls.relationship.setValue('filho')
       this.dependentForm.controls.relationship.disable()
       this.warnMsg.status = true
@@ -131,12 +115,13 @@ export class DependenteComponent implements OnInit {
         formData.append(key, this.dependentForm.get(key)?.value) : null
     });
 
-    this.dataService.setDependent(this.userData.id, formData).subscribe({
+    this.coreService.setDepedent(formData).subscribe({
       next: (response) => {
         this.updateMessage = {
           status: 'sucess',
           message: 'Dependente cadastrado com sucesso !',
         };
+        this.coreService.newDataRequest()
         if(confirm('Seu dependente foi cadastrado com sucesso, aguarde até que seu cadastro seja aprovado.')){
           this.router.navigate(['/lista-dependentes'])
         }
@@ -168,9 +153,10 @@ export class DependenteComponent implements OnInit {
         formData.append(key, this.dependentForm.get(key)?.value) : null
     });
 
-    this.dataService.updateDependent(this.userData.id, this.depId ,formData).subscribe({
+    this.coreService.updateDependent(this.depId ,formData).subscribe({
       next: (response) => {
-        console.log(response)
+        this.coreService.updateDataStore(response, 'dependent')
+        this.coreService.newDataRequest()
         this.updateMessage = {
           status: 'sucess',
           message: 'Dependente alterado com sucesso !',
@@ -184,5 +170,10 @@ export class DependenteComponent implements OnInit {
         throw error;
       },
     });
+  }
+  ngOnDestroy(): void {
+    this.destroy$.next('')
+    this.destroy$.complete()
+    this.coreService.updateDataStore(null,'dependent')
   }
 }
