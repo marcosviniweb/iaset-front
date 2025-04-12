@@ -5,6 +5,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { authGuard } from './core/guards/auth.guard';
 import { PrimeiroAcessoComponent } from './pages/primeiro-acesso/primeiro-acesso.component';
 import { firstAcessGuard } from './core/guards/first-acess.guard';
+import { EsqueceuSenhaComponent } from './pages/esqueceu-senha/esqueceu-senha.component';
 
 
 
@@ -22,13 +23,12 @@ export const routes: Routes = [
         {path:'lista-dependentes', loadComponent:()=> import('./pages/lista-dependente/lista-dependente.component').then((c)=> c.ListaDependenteComponent)},
       ]},
       {path:'perfil', loadComponent:()=> import('./pages/perfil/perfil.component').then((c)=> c.PerfilComponent)},
-    ], canActivate:[authGuard, firstAcessGuard] },
+    ] },
     {path:'primeiro-acesso', component:PrimeiroAcessoComponent},
-    {path:'login', component:LoginComponent, canActivate:[authGuard]},
-    {path:'cadastro', loadComponent:()=> import('./pages/cadastro/cadastro.component').then((c)=> c.CadastroComponent), canActivate:[authGuard]},
-    {path:'**', redirectTo:'/'},
+    {path:'reset-password', component:EsqueceuSenhaComponent},
+    {path:'reset-password/:id', component:EsqueceuSenhaComponent},
+    {path:'login', component:LoginComponent},
+    {path:'cadastro', loadComponent:()=> import('./pages/cadastro/cadastro.component').then((c)=> c.CadastroComponent)},
+   
 ];
 
-export class AppRoutingModule {
-  
-}

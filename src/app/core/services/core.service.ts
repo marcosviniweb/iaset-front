@@ -109,6 +109,7 @@ export class CoreService {
     
   }
 
+
   deleteDependent(dependentId:number){
     const userId = this.data_store$.getValue().userData!.id
     firstValueFrom(this.apiService.deleteDependent(userId,dependentId))

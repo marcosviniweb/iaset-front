@@ -1,79 +1,138 @@
-<!-- <div class="content">
-    <div class="header">
-        <img src="img/white-logo.png" alt="Logo IASET">
-    </div>
-    <div class="alert">
-        <h3>Você se esqueceu da sua senha? <i class="unlock icon"></i></h3>
-        <p>Uma solicitação para a redefinição de senha será enviada para o seu e-mail.</p>
-    </div>
-    
-    @if (errorMessage) {
-    <div class="ui negative message">
-        <i class="close icon"></i>
-        <div class="header">Erro</div>
-        <p>{{errorMessage}}</p>
-    </div>
-    }
-    
-    <form class="ui form dialog-form" [formGroup]="passwordForm">
-       
+<ng-container *ngTemplateOutlet="element"></ng-container>
 
-        <div class="field">
-            <label>Nova Senha *</label>
-            <div class="ui labeled action input">
-                <div class="ui label"><i class="key icon"></i></div>
-                <input #pass type="password" formControlName="newPassword" placeholder="Nova senha">
-                <button class="ui icon button" type="button" (click)="pass.type === 'password'? pass.type = 'text':pass.type = 'password'">
-                    @if(pass.type === 'password'){
-                        <i class="eye icon"></i>
-                    }@else{
-                        <i class="eye slash icon"></i>
-                    }
-                </button>
-            </div>
-            @if(passwordForm.get('newPassword')?.hasError('required') && passwordForm.get('newPassword')?.touched){
-                <div class="ui pointing red basic label">Campo obrigatório</div>
-            } @else if(passwordForm.get('newPassword')?.hasError('minlength') && passwordForm.get('newPassword')?.touched){
-                <div class="ui pointing red basic label">A senha deve ter no mínimo 6 caracteres</div>
-            }
+<ng-template #passwordTemplate >
+    <div class="content">
+        <div class="header">
+            <img src="img/white-logo.png" alt="Logo IASET">
+        </div>
+        <div class="alert">
+            <h3>Você se esqueceu da sua senha? <i class="unlock icon"></i></h3>
         </div>
         
-        <div class="field">
-            <label>Confirme a Nova Senha *</label>
-            <div class="ui labeled action input">
-                <div class="ui label"><i class="key icon"></i></div>
-                <input #confirm type="password" formControlName="confirmPassword" placeholder="Confirme a nova senha">
-                <button class="ui icon button" type="button" (click)="confirm.type === 'password'? confirm.type = 'text':confirm.type = 'password'">
-                    @if(confirm.type === 'password'){
-                        <i class="eye icon"></i>
-                    }@else{
-                        <i class="eye slash icon"></i>
-                    }
-                </button>
+        @if (errorMessage.message) {
+        <div class="ui negative message">
+            <i class="close icon"></i>
+            <p>{{errorMessage.message}}</p>
+        </div>
+        }
+        
+        <form class="ui form dialog-form" [formGroup]="passwordForm">
+           
+    
+            <div class="field">
+                <label>Nova Senha *</label>
+                <div class="ui labeled action input">
+                    <div class="ui label"><i class="key icon"></i></div>
+                    <input #pass type="password" formControlName="newPassword" placeholder="Nova senha">
+                    <button class="ui icon button" type="button" (click)="pass.type === 'password'? pass.type = 'text':pass.type = 'password'">
+                        @if(pass.type === 'password'){
+                            <i class="eye icon"></i>
+                        }@else{
+                            <i class="eye slash icon"></i>
+                        }
+                    </button>
+                </div>
+                @if(passwordForm.get('newPassword')?.hasError('required') && passwordForm.get('newPassword')?.touched){
+                    <div class="ui pointing red basic label">Campo obrigatório</div>
+                } @else if(passwordForm.get('newPassword')?.hasError('minlength') && passwordForm.get('newPassword')?.touched){
+                    <div class="ui pointing red basic label">A senha deve ter no mínimo 6 caracteres</div>
+                }
             </div>
-            @if(passwordForm.get('confirmPassword')?.hasError('required') && passwordForm.get('confirmPassword')?.touched){
-                <div class="ui pointing red basic label">Campo obrigatório</div>
-            } @else if(passwordForm.hasError('mismatch') && passwordForm.get('confirmPassword')?.touched){
-                <div class="ui pointing red basic label">As senhas devem ser iguais</div>
+            
+            <div class="field">
+                <label>Confirme a Nova Senha *</label>
+                <div class="ui labeled action input">
+                    <div class="ui label"><i class="key icon"></i></div>
+                    <input #confirm type="password" formControlName="confirmPassword" placeholder="Confirme a nova senha">
+                    <button class="ui icon button" type="button" (click)="confirm.type === 'password'? confirm.type = 'text':confirm.type = 'password'">
+                        @if(confirm.type === 'password'){
+                            <i class="eye icon"></i>
+                        }@else{
+    
+                            <i class="eye slash icon"></i>
+                        }
+                    </button>
+                </div>
+                @if(passwordForm.get('confirmPassword')?.hasError('required') && passwordForm.get('confirmPassword')?.touched){
+                    <div class="ui pointing red basic label">Campo obrigatório</div>
+                } @else if(passwordForm.hasError('mismatch') && passwordForm.get('confirmPassword')?.touched){
+                    <div class="ui pointing red basic label">As senhas devem ser iguais</div>
+                }
+            </div>
+        </form>
+        
+        <div class="actions">
+            @if (isSubmitting) {
+                <div class="ui segment blue loadered">
+                    <div class="ui active inverted dimmer">
+                        <div class="ui tiny text loader">Processando...</div>
+                    </div>
+                    <p></p>
+                </div>
+            } @else {
+                <button class="ui button fluid" type="button" (click)="logOff()">
+                    Voltar para o Login
+                </button>
+                <button class="ui button primary fluid large" type="button" [disabled]="passwordForm.invalid" (click)="submit()">
+                    Enviar email
+                </button>
             }
         </div>
-    </form>
     
-    <div class="actions">
-        @if (isSubmitting) {
-            <div class="ui segment blue loadered">
-                <div class="ui active inverted dimmer">
-                    <div class="ui tiny text loader">Processando...</div>
-                </div>
-                <p></p>
-            </div>
-        } @else {
-            <button class="ui button fluid" type="button" (click)="logOff()">
-                Voltar para o Login
-            </button>
-            <button class="ui button primary fluid large" type="button" [disabled]="passwordForm.invalid" (click)="submit()">
-                Enviar email
-            </button>
-        }
     </div>
-</div> -->
+</ng-template>
+
+
+
+<ng-template #emailTemplate>
+    <div class="content">
+        <div class="header">
+            <img src="img/white-logo.png" alt="Logo IASET">
+        </div>
+        <div class="alert">
+            <h3>Estamos prontos para ajudá-lo a redefinir sua senha. Um email será enviado para você <i class="unlock icon"></i></h3>
+        </div>
+        
+        @if (errorMessage.message) {
+        <div class="ui message" [ngClass]="errorMessage.class">
+            <i class="close icon"></i>
+            <p>{{errorMessage.message}}</p>
+        </div>
+        }
+        
+        <form class="ui form dialog-form" [formGroup]="passwordForm">
+           
+    
+            <div class="field">
+                <label>Seu E-mail *</label>
+                <div class="ui labeled action input">
+                    <div class="ui label"><i class="mail icon"></i></div>
+                    <input #email type="email" [formControl]="emailControl" placeholder="Digite seu email">
+                   
+                </div>
+            </div>
+            
+           
+        </form>
+        
+        <div class="actions">
+            @if (isSubmitting) {
+                <div class="ui segment blue loadered">
+                    <div class="ui active inverted dimmer">
+                        <div class="ui tiny text loader">Processando...</div>
+                    </div>
+                    <p></p>
+                </div>
+            } @else {
+                <button class="ui button fluid" type="button" (click)="logOff()">
+                    Voltar para o Login
+                </button>
+                <button class="ui button primary fluid large" type="button" 
+                [disabled]="emailControl.invalid" (click)="sendEmail()">
+                    Enviar email
+                </button>
+            }
+        </div>
+    
+    </div>
+</ng-template>

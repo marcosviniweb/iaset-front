@@ -91,6 +91,14 @@ export class AuthService {
     }
   }
 
+  sendPasswordEmail(email:{email:string}){
+   return  this.httpClient.post(this.apiUrl.dataUser+'/forgot-password', email)
+  }
+
+  changePasswordFromEmail(body:{token:string, newPassword:string}){
+    return  firstValueFrom(this.httpClient.post(this.apiUrl.dataUser+'/reset-password', body))
+  }
+
   async changeFirstAccess(body: {firstAccess: boolean;}) {
     const userData = this.coreService.getDataStore().value.userData
  
