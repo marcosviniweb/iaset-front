@@ -6,12 +6,12 @@
             <img src="img/white-logo.png" alt="Logo IASET">
         </div>
         <div class="alert">
-            <h3>Você se esqueceu da sua senha? <i class="unlock icon"></i></h3>
+            <h3>Você se esqueceu da sua senha? <i class="unlock icon" ></i></h3>
         </div>
         
         @if (errorMessage.message) {
-        <div class="ui negative message">
-            <i class="close icon"></i>
+        <div class="ui message" [ngClass]="errorMessage.class">
+            <i class="close icon" (click)="closeAlert()" ></i>
             <p>{{errorMessage.message}}</p>
         </div>
         }
@@ -90,12 +90,15 @@
             <img src="img/white-logo.png" alt="Logo IASET">
         </div>
         <div class="alert">
-            <h3>Estamos prontos para ajudá-lo a redefinir sua senha. Um email será enviado para você <i class="unlock icon"></i></h3>
+            <h3>Estamos prontos para ajudá-lo a redefinir sua senha. 
+                <br> Um email será enviado para você <br> 
+                <b>Verifique sua caixa de Spam/Lixeira</b>
+                <i class="unlock icon"></i></h3>
         </div>
         
-        @if (errorMessage.message) {
+        @if (errorMessage.message ) {
         <div class="ui message" [ngClass]="errorMessage.class">
-            <i class="close icon"></i>
+            <i class="close icon" (click)="closeAlert()" ></i>
             <p>{{errorMessage.message}}</p>
         </div>
         }

@@ -36,15 +36,14 @@ export class EsqueceuSenhaComponent implements OnInit, AfterViewInit {
 
   private authService = inject(AuthService);
   private fb = inject(NonNullableFormBuilder);
-  private coreService = inject(CoreService);
   private activatedRoute = inject(ActivatedRoute);
   private cdf = inject(ChangeDetectorRef);
-  private route = inject(Router);
 
   tokenPassword = '';
   element!: TemplateRef<HTMLElement>;
   errorMessage = { class: '', message: '' };
   isSubmitting = false;
+  alert = false
   emailControl = new FormControl<string>('', [
     Validators.required,
     Validators.email,
@@ -171,7 +170,7 @@ export class EsqueceuSenhaComponent implements OnInit, AfterViewInit {
           (this.isSubmitting = false),
           this.emailControl.reset();
         this.errorMessage = {
-          class: 'positive',
+          class: 'negative',
           message: error.error.message
             ? error.error.message
             : 'Ocorreu um erro durante o processo. tente novamente mais tarde',
@@ -183,5 +182,8 @@ export class EsqueceuSenhaComponent implements OnInit, AfterViewInit {
     const password = control.get('newPassword')?.value;
     const confirmPassword = control.get('confirmPassword')?.value;
     return password === confirmPassword ? null : { mismatch: true };
+  }
+  closeAlert(){    
+    this.errorMessage = {class:'', message:''}
   }
 }
